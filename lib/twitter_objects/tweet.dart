@@ -95,7 +95,7 @@ class Tweet {
     Tweet rootTweet = retweeted_status ?? this;
 
     final images = extended_entities?.media
-            .map((e) => Image.network(e.media_url_https, fit: BoxFit.cover))
+            .map((e) => Container(width: 100, height: 100, child: Image.network(e.media_url_https, fit: BoxFit.contain)))
             .toList() ??
         [];
     final tweetContent = Column(children: [
