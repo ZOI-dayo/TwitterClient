@@ -52,7 +52,7 @@ class MyDatabase {
 
   Future<List<Tweet>?> getTweets() async {
     final res = await _db?.query("tweets");
-    return res?.isNotEmpty ?? false ? res?.map((e) => new Tweet(JsonDecoder().convert(e["contents"].toString()))).toList() : [];
+    return res?.isNotEmpty ?? false ? res?.map((e) => new Tweet(JsonDecoder().convert(e["content"].toString()))).toList() : [];
   }
 
 }

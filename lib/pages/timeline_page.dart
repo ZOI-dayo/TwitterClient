@@ -22,7 +22,7 @@ class TimelinePage extends StatelessWidget {
           height: 700,
           width: 500,
           child: ListView.builder(
-            itemCount: 12,
+            itemCount: context.watch<TimelineModel>().tweets.length,
             itemBuilder: (BuildContext context, int index) {
               return Container(
                 height: 200,
