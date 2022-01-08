@@ -15,6 +15,13 @@ class LoginModel extends ChangeNotifier {
 
   static oauth1.Credentials? tokenCredentials;
 
+  LoginModel(context) {
+    MainModel mainModel = Provider.of<MainModel>(context, listen: false);
+    if(!mainModel.hasToken()) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) => Navigator.pop(context));
+    }
+  }
+
   void openLoginWindow(BuildContext context) {
     // final platform = Provider.of<MainModel>(context, listen: false).platform;
     // final clientCredentials = Provider.of<MainModel>(context, listen: false).clientCredentials;
@@ -31,7 +38,7 @@ class LoginModel extends ChangeNotifier {
     });
     // _initPrefs(context);
 
-    Provider.of<MainModel>(context, listen: false).notifyListeners();
+    Provider.of<MainModel>(context).notifyListeners();
     notifyListeners();
   }
 
@@ -43,13 +50,16 @@ class LoginModel extends ChangeNotifier {
   void tryLogin(BuildContext context) {
     MainModel mainModel = Provider.of<MainModel>(context, listen: false);
     final pin = mainModel.controller.text;
-    // if(!mainModel.hasToken()) {
+    if(!mainModel.hasToken()) {
+       Navigator.pop(context);
+    }
     if(context.read<MainModel>().controller.text.isNotEmpty) {
       print("has token");
       _loginWithPin(context, pin);
     }
 
     Navigator.pop(context);
+    mainModel.notifyListeners();
   }
   void _loginWithPin(BuildContext context, String pin) async {
     MainModel main = Provider.of<MainModel>(context, listen: false);

@@ -22,11 +22,14 @@ class MainModel extends ChangeNotifier {
   // oauth1.Credentials? tokenCredentials;
   late final client;
 
-
-
   MainModel() {
     print("qaaa");
-    SharedPreferences.getInstance().then((value) => prefs = value);
+    _init();
+  }
+  _init() async {
+    prefs = await SharedPreferences.getInstance();
+    notifyListeners();
+    print("aaa");
   }
 
   bool hasToken() {

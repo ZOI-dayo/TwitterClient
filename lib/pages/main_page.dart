@@ -29,13 +29,13 @@ class MainPage extends StatelessWidget {
               },
               child: Text('Timeline'),
             ),
-            ElevatedButton(
+            if(!Provider.of<MainModel>(context).hasToken()) ElevatedButton(
               onPressed: () {
                 print(context.toString());
                 Navigator.push(
                     context, MaterialPageRoute(
                     builder: (context) => ChangeNotifierProvider.value(
-                        value: new LoginModel(),
+                        value: new LoginModel(context),
                         child: LoginPage()
                     )
                 )

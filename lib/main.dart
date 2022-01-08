@@ -50,13 +50,14 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: ChangeNotifierProvider(
-        create: (context) => new MainModel(),
+        create: (context) => MainModel(),
         child: MaterialApp(
             title: 'Flutter Demo',
             theme: ThemeData(
               primarySwatch: Colors.blue,
             ),
-            home: MainPage()),
+            home: MainPage()
+        ),
       ),
     );
   }
