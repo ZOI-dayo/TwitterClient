@@ -15,6 +15,14 @@ class TimelineModel extends ChangeNotifier {
   List<Tweet> tweets = [];
   MyDatabase db = MyDatabase();
 
+  int Count(BuildContext context) {
+    if(tweets.isEmpty){
+      getTimeline(context);
+      return 0;
+    }
+    return tweets.length;
+  }
+
   void getTimeline(BuildContext context) async {
     MainModel main = Provider.of<MainModel>(context, listen: false);
     // final res = main.auth.requestTokenCredentials(

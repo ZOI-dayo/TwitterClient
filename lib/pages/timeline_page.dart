@@ -14,7 +14,8 @@ class TimelinePage extends StatelessWidget {
             child: RefreshIndicator(
                 onRefresh: () async { context.read<TimelineModel>().getTimeline(context); },
                   child: ListView.builder(
-                    itemCount: context.watch<TimelineModel>().tweets.length,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: context.watch<TimelineModel>().Count(context),
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
                         height: 200,
