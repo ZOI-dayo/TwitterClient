@@ -5,9 +5,30 @@ import 'package:twitter_test/pages/timeline_model.dart';
 
 class TimelinePage extends StatelessWidget {
 
+  Widget _buildProfileIconButton(BuildContext context){
+    const iconSize = 32.0;
+    return IconButton(
+      icon: context.read<TimelineModel>().profile_image().isEmpty
+          ? Icon(
+        Icons.account_circle,
+        size: iconSize,
+      )
+          : CircleAvatar(
+        backgroundImage: NetworkImage(context.read<TimelineModel>().profile_image()),
+        backgroundColor: Colors.transparent,
+        radius: iconSize / 2,
+      ),
+      onPressed: ()=>{}
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Twitter Client'),
+        leading: _buildProfileIconButton(context),
+      ),
       body: Column(
         children: [
           Expanded(
