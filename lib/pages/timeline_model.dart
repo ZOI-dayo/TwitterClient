@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
 import 'package:twitter_test/main.dart';
@@ -21,6 +22,10 @@ class TimelineModel extends ChangeNotifier {
       return 0;
     }
     return tweets.length;
+  }
+
+  String profile_image(){
+    return "";
   }
 
   void getTimeline(BuildContext context) async {
