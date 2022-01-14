@@ -27,7 +27,7 @@ class MyDatabase {
     return db.execute(sql);
   }
   void onOpen(db) async {
-    final List<Map<String, dynamic>> maps = await db.query('tweets');
+    // final List<Map<String, dynamic>> maps = await db.query('tweets');
   }
 
   void onUpgrade(db, oldVersion, newVersion) {
@@ -39,9 +39,6 @@ class MyDatabase {
   // }
 
   Future<void> addTweet(final Tweet tweet) async {
-    if((await _db?.rawQuery("SELECT id=${tweet.id} FROM tweets"))?.isNotEmpty ?? false){
-      return;
-    }
     var tweetData = {
       "id": tweet.id,
       "date": tweet.created_at_date.millisecondsSinceEpoch,
@@ -51,8 +48,14 @@ class MyDatabase {
   }
 
   Future<List<Tweet>?> getTweets() async {
-    final res = await _db?.query("tweets");
+    final res = await _db?.query("tweets", orderBy: "id DESC");
     return res?.isNotEmpty ?? false ? res?.map((e) => new Tweet(JsonDecoder().convert(e["content"].toString()))).toList() : [];
+  }
+
+  Future<String?> getLatestTweetId() async {
+    final maxId = (await _db?.rawQuery("SELECT MAX(id) as max_id from tweets"))?[0]["max_id"].toString();
+    print(maxId.toString());
+    return maxId;
   }
 
 }

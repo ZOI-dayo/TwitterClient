@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
-import 'package:twitter_test/main.dart';
 import 'package:twitter_test/my_database.dart';
 
 import '../twitter_objects/tweet.dart';
@@ -30,10 +29,6 @@ class TimelineModel extends ChangeNotifier {
 
   void getTimeline(BuildContext context) async {
     MainModel main = Provider.of<MainModel>(context, listen: false);
-    // final res = main.auth.requestTokenCredentials(
-    //   main.tokenCredentials!,
-    //   main.pin,
-    // );
     print(main.platform.signatureMethod);
     print(main.clientCredentials);
     var client = new oauth1.Client(
@@ -42,8 +37,9 @@ class TimelineModel extends ChangeNotifier {
         new oauth1.Credentials(
             await main.loadToken(), await main.loadTokenSecret()));
     final result = await client.get(Uri.parse(
-        'https://api.twitter.com/1.1/statuses/user_timeline.json?count=200'));
+        'https://api.twitter.com/1.1/statuses/home_timeline.json?count=200&since_id=' + (await db.getLatestTweetId() ?? "")));
     // final result = await client.get(Uri.parse('https://api.twitter.com/1.1/statuses/home_timeline.json?count=200'));
+    print((await db.getLatestTweetId() ?? ""));
     apiResponse = result.body;
     print("apiResponse");
     print(apiResponse);
@@ -56,9 +52,4 @@ class TimelineModel extends ChangeNotifier {
     tweets = await db.getTweets() ?? [];
     notifyListeners();
   }
-
-  // Tweet getTweet() {
-  //   // return MyDatabase().selectTweet();
-  //   return null;
-  // }
 }

@@ -3,13 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:oauth1/oauth1.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twitter_test/pages/main_model.dart';
-import 'package:twitter_test/pages/main_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
-
-import 'login_page.dart';
 
 class LoginModel extends ChangeNotifier {
 
@@ -69,7 +65,7 @@ class LoginModel extends ChangeNotifier {
       tokenCredentials ?? new Credentials("", ""),
       pin
     );
-    print(res);
+    // print(res);
     // print('Access Token: ${res.credentials.token}');
     // print('Access Token Secret: ${res.credentials.tokenSecret}');
 
