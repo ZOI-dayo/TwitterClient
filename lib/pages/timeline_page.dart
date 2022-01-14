@@ -65,7 +65,6 @@ class TimelinePage extends StatelessWidget {
                     itemCount: context.watch<TimelineModel>().Count(context),
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
-                        height: 200,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.red),
                           borderRadius: BorderRadius.circular(10),
@@ -94,7 +93,40 @@ class TimelinePage extends StatelessWidget {
                                   .watch<TimelineModel>()
                                   .tweets
                                   .elementAt(index)
-                                  .getTweetContent()
+                                  .getTweetContent(),
+                              SizedBox(
+                                child: Row(children: [
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Icon(Icons.comment),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.transparent,
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Icon(Icons.favorite),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.transparent,
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Icon(Icons.loop),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.transparent,
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Icon(Icons.bookmark_border),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.transparent,
+                                    ),
+                                  ),
+                                  ],
+                                )
+                              )
                             ],
                           ))
                         ]),
