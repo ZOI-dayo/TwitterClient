@@ -29,6 +29,32 @@ class TimelinePage extends StatelessWidget {
         title: Text('Twitter Client'),
         leading: _buildProfileIconButton(context),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.black,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.festival),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.light),
+            label: 'Notification',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            label: 'Message',
+          ),
+        ],
+        onTap: (int index) => {
+          context.read<TimelineModel>().selectTab(index)
+        },
+        currentIndex: context.read<TimelineModel>().selectedTab,
+      ),
       body: Column(
         children: [
           Expanded(
