@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
 import 'package:twitter_test/my_database.dart';
 
+import '../twitter_api.dart';
 import '../twitter_objects/tweet.dart';
 import 'main_model.dart';
 
@@ -57,5 +58,9 @@ class TimelineModel extends ChangeNotifier {
     });
     tweets = await db.getTweets() ?? [];
     notifyListeners();
+  }
+
+  Future<Color> likeColor(int index) async {
+    return await TwitterAPI().isLiked(tweets.elementAt(index).id.toString())? Colors.red : Colors.white;
   }
 }

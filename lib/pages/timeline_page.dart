@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
 import 'package:twitter_test/pages/profile_bar.dart';
 import 'package:twitter_test/pages/timeline_model.dart';
+import 'package:twitter_test/twitter_api.dart';
 
 class TimelinePage extends StatelessWidget {
 
+  final likeList = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,10 +91,31 @@ class TimelinePage extends StatelessWidget {
                                     ),
                                   ),
                                   ElevatedButton(
-                                    onPressed: () {},
-                                    child: Icon(Icons.favorite),
+                                    onPressed: () {
+                                      TwitterAPI().like(
+                                          context.read<TimelineModel>()
+                                          .tweets.elementAt(index)
+                                          .id.toString());
+                                      context
+                                          .read<TimelineModel>().notifyListeners();
+                                    },
+                                    child: Consumer<TimelineModel>(
+                                      builder: (_, model, widget) {
+                                        return FutureBuilder(
+                                          future: model.likeColor(index),
+                                          builder: (BuildContext context, AsyncSnapshot<Color> snapshot) {
+                                            if (snapshot.hasData) {
+                                              return Icon(Icons.favorite, color: snapshot.data);
+                                            } else {
+                                              return Icon(Icons.favorite);
+                                            }
+                                          },
+                                        );
+                                      },
+                                    ),
                                     style: ElevatedButton.styleFrom(
                                       primary: Colors.transparent,
+                                      // primary: Colors.red,
                                     ),
                                   ),
                                   ElevatedButton(
