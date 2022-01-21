@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:twitter_test/pages/login_page.dart';
@@ -12,40 +10,20 @@ import 'main_model.dart';
 class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            ElevatedButton(
-              onPressed: () {
-                print(context.toString());
-                Navigator.push(
-                    context, MaterialPageRoute(
-                    builder: (context) => ChangeNotifierProvider.value(
-                        value: new TimelineModel(),
-                        child: TimelinePage()
-                    )
-                ));
-              },
-              child: Text('Timeline'),
-            ),
-            if(!Provider.of<MainModel>(context).hasToken()) ElevatedButton(
-              onPressed: () {
-                print(context.toString());
-                Navigator.push(
-                    context, MaterialPageRoute(
-                    builder: (context) => ChangeNotifierProvider.value(
-                        value: new LoginModel(context),
-                        child: LoginPage()
-                    )
-                )
-                );
-              },
-              child: Text('Login'),
-            ),
-          ]),
-        ),
+    return ChangeNotifierProvider(
+      create: (context) => MainModel(),
+      child: MaterialApp(
+        home: _TokenCheck(),
       ),
     );
+  }
+}
+
+class _TokenCheck extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // ログイン状態に応じて、画面を切り替える
+    final bool _hasToken = context.watch<MainModel>().hasToken();
+    return _hasToken? TimelinePage() : LoginPage();
   }
 }

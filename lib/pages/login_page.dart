@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
 import 'package:twitter_test/pages/login_model.dart';
 import 'package:twitter_test/pages/main_model.dart';
@@ -7,6 +8,20 @@ import 'package:twitter_test/pages/main_model.dart';
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => LoginModel(),
+      child: MaterialApp(
+        home: _LoginPage(),
+      ),
+    );
+  }
+}
+
+
+class _LoginPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('=============-- incoming _LoginPage');
     return Scaffold(
         body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       TextFormField(
@@ -17,7 +32,7 @@ class LoginPage extends StatelessWidget {
         onPressed: () => context.read<LoginModel>().openLoginWindow(context),
         child: Text('OpenLoginWindow'),
       ),
-        ElevatedButton(
+      ElevatedButton(
         onPressed: () => context.read<LoginModel>().tryLogin(context),
         child: Text('OK'),
       )

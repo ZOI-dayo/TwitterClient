@@ -7,6 +7,18 @@ import 'package:twitter_test/pages/timeline_model.dart';
 import 'package:twitter_test/twitter_api.dart';
 
 class TimelinePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => TimelineModel(),
+      child: MaterialApp(
+        home: _TimelinePage(),
+      ),
+    );
+  }
+}
+
+class _TimelinePage extends StatelessWidget {
 
   final likeList = [];
   @override
