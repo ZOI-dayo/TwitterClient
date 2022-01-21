@@ -1,10 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
 import 'package:twitter_test/pages/profile_bar.dart';
 import 'package:twitter_test/pages/timeline_model.dart';
 
 class TimelinePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => TimelineModel(),
+      child: MaterialApp(
+        home: _TimelinePage(),
+      ),
+    );
+  }
+}
+
+class _TimelinePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
