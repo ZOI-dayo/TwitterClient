@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
+import 'package:twitter_test/pages/message_page.dart';
+import 'package:twitter_test/pages/notification_page.dart';
 
 import 'home_model.dart';
 import 'profile_bar.dart';
@@ -66,8 +68,8 @@ class _HomePage extends StatelessWidget {
     switch (context.read<HomeModel>().selectedTab) {
       case 0:return TimelinePage();
       case 1:return SearchPage();
-      case 2:return Text("Notifier");
-      case 3:return Text("Message");
+      case 2:return NotificationPage();
+      case 3:return MessagePage();
       default:return Text("ERROR");
     }
   }
