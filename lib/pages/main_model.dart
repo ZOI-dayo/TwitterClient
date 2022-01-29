@@ -51,4 +51,8 @@ class MainModel extends ChangeNotifier {
     notifyListeners();
     return result ?? Future.value(false);
   }
+
+  String profile_image(){
+    return "";
+  }
 }
