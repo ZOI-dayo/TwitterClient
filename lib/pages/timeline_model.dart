@@ -15,7 +15,6 @@ class TimelineModel extends ChangeNotifier {
   String apiResponse = "";
   List<Tweet> tweets = [];
   MyDatabase db = MyDatabase();
-  int selectedTab = 0;
   bool isLoaded = false;
 
   int Count(BuildContext context) {
@@ -24,15 +23,6 @@ class TimelineModel extends ChangeNotifier {
       return 0;
     }
     return tweets.length;
-  }
-
-  void selectTab(int index){
-    selectedTab = index;
-    notifyListeners();
-  }
-
-  String profile_image(){
-    return "";
   }
 
   void tryLoadTimeline(BuildContext context) {

@@ -2,11 +2,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
-import 'package:twitter_test/pages/profile_bar.dart';
-import 'package:twitter_test/pages/timeline_model.dart';
-import 'package:twitter_test/pages/timeline_page.dart';
 
-class HomePage extends StatelessWidget {
+import 'home_model.dart';
+import 'profile_bar.dart';
+import 'search_page.dart';
+import 'timeline_page.dart';
+
+class HomePage extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => HomeModel(),
+      child: MaterialApp(
+        home: _HomePage(),
+      ),
+    );
+  }
+}
+
+
+class _HomePage extends StatelessWidget {
 
   final likeList = [];
   @override
@@ -38,11 +53,22 @@ class HomePage extends StatelessWidget {
           ),
         ],
         onTap: (int index) => {
-          context.read<TimelineModel>().selectTab(index)
+          context.read<HomeModel>().selectTab(index)
         },
-        currentIndex: context.read<TimelineModel>().selectedTab,
+        currentIndex: context.watch<HomeModel>().selectedTab,
       ),
-      body: TimelinePage().getTab(0, context),
+      body: getCurrentTab(context),
     );
+  }
+
+  Widget getCurrentTab(BuildContext context) {
+    print('selectTab ${context.read<HomeModel>().selectedTab}');
+    switch (context.read<HomeModel>().selectedTab) {
+      case 0:return TimelinePage();
+      case 1:return SearchPage();
+      case 2:return Text("Notifier");
+      case 3:return Text("Message");
+      default:return Text("ERROR");
+    }
   }
 }
