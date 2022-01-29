@@ -16,6 +16,7 @@ class TimelineModel extends ChangeNotifier {
   List<Tweet> tweets = [];
   MyDatabase db = MyDatabase();
   bool isLoaded = false;
+  DateTime lastRequestTime = DateTime(1,1);
 
   int Count(BuildContext context) {
     if(tweets.isEmpty){
@@ -25,12 +26,14 @@ class TimelineModel extends ChangeNotifier {
     return tweets.length;
   }
 
-  void tryLoadTimeline(BuildContext context) {
-    if(!isLoaded) getTimeline(context);
-    isLoaded = true;
-  }
-
   void getTimeline(BuildContext context) async {
+    print(lastRequestTime);
+    if(lastRequestTime.add(Duration(seconds: 30)).millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch){
+      print(lastRequestTime.add(Duration(seconds: 30)).toString() + " > " + DateTime.now().toString());
+      print("too early");
+      return;
+    }
+    lastRequestTime = DateTime.now();
     MainModel main = Provider.of<MainModel>(context, listen: false);
     print(main.platform.signatureMethod);
     print(main.clientCredentials);
@@ -39,10 +42,12 @@ class TimelineModel extends ChangeNotifier {
         main.clientCredentials,
         new oauth1.Credentials(
             await main.loadToken(), await main.loadTokenSecret()));
+    String? latestTweetId = await db.getLatestTweetId();
     final result = await client.get(Uri.parse(
-        'https://api.twitter.com/1.1/statuses/home_timeline.json?count=200&since_id=' + (await db.getLatestTweetId() ?? "")));
+        'https://api.twitter.com/1.1/statuses/home_timeline.json?count=200' + (latestTweetId == null ? "" : "&since_id=" + latestTweetId)));
     // final result = await client.get(Uri.parse('https://api.twitter.com/1.1/statuses/home_timeline.json?count=200'));
     print((await db.getLatestTweetId() ?? ""));
+    print(result.request?.url.toString() ?? "");
     apiResponse = result.body;
     print("apiResponse");
     print(apiResponse);
