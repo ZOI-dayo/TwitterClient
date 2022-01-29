@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-import 'SearchModel.dart';
+import 'search_model.dart';
 
 class SearchPage extends StatelessWidget {
   @override
@@ -20,8 +20,10 @@ class SearchPage extends StatelessWidget {
 class _SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [Text('hello')],
+    return Material(
+      child: Column(
+        children: [Text('search')],
+      ),
     );
   }
 }
