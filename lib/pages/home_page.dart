@@ -4,13 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
 import 'package:twitter_test/pages/profile_bar.dart';
 import 'package:twitter_test/pages/timeline_model.dart';
+import 'package:twitter_test/pages/timeline_page.dart';
 
 class HomePage extends StatelessWidget {
 
   final likeList = [];
   @override
   Widget build(BuildContext context) {
-    context.read<TimelineModel>().tryLoadTimeline(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Twitter Client'),
@@ -42,7 +42,7 @@ class HomePage extends StatelessWidget {
         },
         currentIndex: context.read<TimelineModel>().selectedTab,
       ),
-      body: Text(""),
+      body: TimelinePage().getTab(0, context),
     );
   }
 }

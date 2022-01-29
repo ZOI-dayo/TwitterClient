@@ -16,6 +16,7 @@ class TimelineModel extends ChangeNotifier {
   List<Tweet> tweets = [];
   MyDatabase db = MyDatabase();
   int selectedTab = 0;
+  bool isLoaded = false;
 
   int Count(BuildContext context) {
     if(tweets.isEmpty){
@@ -32,6 +33,11 @@ class TimelineModel extends ChangeNotifier {
 
   String profile_image(){
     return "";
+  }
+
+  void tryLoadTimeline(BuildContext context) {
+    if(!isLoaded) getTimeline(context);
+    isLoaded = true;
   }
 
   void getTimeline(BuildContext context) async {
