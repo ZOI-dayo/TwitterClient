@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:oauth1/oauth1.dart' as oauth1;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:twitter_test/twitter_objects/tweet.dart';
+import './twitter_objects/tweet.dart';
 
 class TwitterAPI {
   static final TwitterAPI _instance = TwitterAPI._internal();
@@ -41,7 +41,7 @@ class TwitterAPI {
     return prefs.getString('twitter_token_secret') ?? "";
   }
 
-  Future<Map<String,dynamic>> _request(String location, [String type = 'GET', String version = '1.1']) async {
+  Future<dynamic> _request(String location, [String type = 'GET', String version = '1.1']) async {
     final result;
     switch(type){
       case 'GET':
@@ -54,9 +54,7 @@ class TwitterAPI {
         return {};
     }
     final body = result.body;
-    print(body);
-    final jsonResult = new Map<String,dynamic>.from(jsonDecode(body));
-    return jsonResult;
+    return jsonDecode(body);
   }
 
   List<String> likes = [];
@@ -71,5 +69,19 @@ class TwitterAPI {
       print(likes);
     }
     return likes.contains(tweetId);
+  }
+
+  Future<List<Tweet>> getTimeline(String? latestTweetId) async {
+    var result = await _request('statuses/home_timeline.json?count=200' + (latestTweetId == null ? "" : "&since_id=" + latestTweetId), 'GET');
+    if(result is Map && result.containsKey("errors")){
+      print("ERROR : " + result.toString());
+      return [];
+    }
+    List tweetData = result as List;
+    List<Tweet> tweetObjects = [];
+    tweetData.forEach((data) => {
+      tweetObjects.add(new Tweet(data))
+    });
+    return tweetObjects;
   }
 }

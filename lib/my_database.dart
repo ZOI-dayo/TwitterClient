@@ -44,6 +44,10 @@ class MyDatabase {
       "date": tweet.created_at_date.millisecondsSinceEpoch,
       "content": tweet.getJson()
     };
+    if((await _db?.query("tweets", where: "id = " + tweet.id_str))?.isNotEmpty ?? false){
+      print("tweet already exist");
+      return;
+    }
     _db?.insert('tweets', tweetData);
   }
 
