@@ -10,7 +10,6 @@ class ExpandedEntities {
 
   ExpandedEntities(Map<String, dynamic> srcObject) {
     // TODO: null時処理中断
-    print(srcObject);
     if (srcObject.containsKey("hashtags")) {
       for(final tag in srcObject["hashtags"]){
         hashtags.add(new Hashtag(tag));

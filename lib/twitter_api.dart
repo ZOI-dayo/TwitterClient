@@ -66,7 +66,6 @@ class TwitterAPI {
   Future<bool> isLiked(String tweetId) async {
     if(likes.length <= 0) {
       likes = ((await _request('favorites/list.json?count=200')) as List).map((e) => new Tweet(e).id.toString()).toList();
-      print(likes);
     }
     return likes.contains(tweetId);
   }

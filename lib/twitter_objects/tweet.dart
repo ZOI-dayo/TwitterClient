@@ -41,7 +41,6 @@ class Tweet {
 
   // Tweet(String tweetString) {
   Tweet(Map tweetObject) {
-    print(tweetObject);
     this.tweetObject = tweetObject;
     // var tweetObject = new JsonDecoder().convert(tweetString);
     created_at = tweetObject["created_at"]?.toString().trim() ?? "";
@@ -107,7 +106,6 @@ class Tweet {
           children: images
       ),
     ]);
-    print(tweetContent);
     return tweetContent;
   }
 
