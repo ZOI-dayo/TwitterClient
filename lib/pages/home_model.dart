@@ -18,10 +18,6 @@ class HomeModel extends ChangeNotifier {
   bool isLoaded = false;
   DateTime lastRequestTime = DateTime(1,1);
 
-  HomeModel(MainModel model){
-
-  }
-
   int Count(BuildContext context) {
     if(tweets.isEmpty){
       getTimeline(context);
