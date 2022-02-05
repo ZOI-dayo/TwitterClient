@@ -1,8 +1,6 @@
 // https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet
 
 import 'dart:convert';
-import 'dart:ffi';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -14,6 +12,7 @@ class Tweet {
   late final String created_at;
   late final DateTime created_at_date;
   late final int id;
+  late final String id_str;
   late final String text;
   late final String source;
   late final bool truncated; // 不必要?
@@ -48,6 +47,7 @@ class Tweet {
     created_at = tweetObject["created_at"]?.toString().trim() ?? "";
     created_at_date = DateFormat('EEE MMM dd hh:mm:ss +0000 yyyy', 'en_US').parse(created_at);
     id = tweetObject["id"];
+    id_str = tweetObject["id_str"];
     text = tweetObject["text"] ?? "";
     source = tweetObject["source"] ?? "";
     truncated = tweetObject["truncated"] ?? false;

@@ -64,4 +64,8 @@ class TimelineModel extends ChangeNotifier {
   Future<Color> likeColor(int index) async {
     return await TwitterAPI().isLiked(tweets.elementAt(index).id.toString())? Colors.red : Colors.white;
   }
+
+  void refresh() {
+    notifyListeners();
+  }
 }
