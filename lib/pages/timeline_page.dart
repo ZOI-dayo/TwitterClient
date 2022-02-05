@@ -5,6 +5,8 @@ import 'package:provider/src/provider.dart';
 import 'package:twitter_test/pages/timeline_model.dart';
 import 'package:twitter_test/twitter_api.dart';
 
+import 'home_model.dart';
+
 class TimelinePage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
@@ -26,11 +28,11 @@ class _SearchPage extends StatelessWidget {
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
-                context.read<TimelineModel>().getTimeline(context);
+                context.read<HomeModel>().getTimeline(context);
               },
               child: ListView.builder(
                 physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: context.watch<TimelineModel>().Count(context),
+                itemCount: context.watch<HomeModel>().Count(context),
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     decoration: BoxDecoration(
@@ -41,7 +43,7 @@ class _SearchPage extends StatelessWidget {
                     child: Row(children: [
                       // Image.network('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'),
                       Image.network(context
-                          .watch<TimelineModel>()
+                          .watch<HomeModel>()
                           .tweets
                           .elementAt(index)
                           .user
@@ -51,14 +53,14 @@ class _SearchPage extends StatelessWidget {
                             children: [
                               Text(
                                   context
-                                      .watch<TimelineModel>()
+                                      .watch<HomeModel>()
                                       .tweets
                                       .elementAt(index)
                                       .user
                                       .name,
                                   style: TextStyle(fontWeight: FontWeight.bold)),
                               context
-                                  .watch<TimelineModel>()
+                                  .watch<HomeModel>()
                                   .tweets
                                   .elementAt(index)
                                   .getTweetContent(),
@@ -75,7 +77,7 @@ class _SearchPage extends StatelessWidget {
                                       ElevatedButton(
                                         onPressed: () {
                                           TwitterAPI().like(context
-                                              .read<TimelineModel>()
+                                              .read<HomeModel>()
                                               .tweets
                                               .elementAt(index)
                                               .id
@@ -84,7 +86,7 @@ class _SearchPage extends StatelessWidget {
                                               .read<TimelineModel>()
                                               .notifyListeners();
                                         },
-                                        child: Consumer<TimelineModel>(
+                                        child: Consumer<HomeModel>(
                                           builder: (_, model, widget) {
                                             return FutureBuilder(
                                               future: model.likeColor(index),
