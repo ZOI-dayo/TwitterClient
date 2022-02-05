@@ -1,11 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
-import 'package:twitter_test/pages/timeline_model.dart';
-import 'package:twitter_test/widgets/TweetWidget.dart';
 
-class TimelinePage extends StatelessWidget{
+import './timeline_model.dart';
+import '../twitter_objects/tweet.dart';
+import '../widgets/TweetWidget.dart';
+
+class TimelinePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -28,15 +29,16 @@ class _SearchPage extends StatelessWidget {
               onRefresh: () async {
                 context.read<TimelineModel>().getTimeline(context);
               },
-              child: ListView.builder(
+              child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: context.watch<TimelineModel>().Count(context),
-                itemBuilder: (BuildContext context, int index) {
-                  return TweetWidget(() => {context.read<TimelineModel>().refresh()}, context.watch<TimelineModel>().tweets[index]);
-                },
+                children: context
+                            .watch<TimelineModel>()
+                            .tweets
+                            .map((Tweet t) => TweetWidget(
+                                () => {context.read<TimelineModel>().refresh()},
+                                t))
+                            .toList())),
               ),
-            ),
-          ),
         ],
       ),
     );

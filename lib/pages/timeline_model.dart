@@ -11,10 +11,10 @@ class TimelineModel extends ChangeNotifier {
   List<Tweet> tweets = [];
   MyDatabase db = MyDatabase();
   bool isLoaded = false;
-  DateTime lastRequestTime = DateTime(1,1);
+  DateTime lastRequestTime = DateTime(1, 1);
 
   int Count(BuildContext context) {
-    if(tweets.isEmpty){
+    if (tweets.isEmpty) {
       getTimeline(context);
       return 0;
     }
@@ -22,20 +22,24 @@ class TimelineModel extends ChangeNotifier {
   }
 
   void getTimeline(BuildContext context) async {
-    if(lastRequestTime.add(Duration(seconds: 30)).millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch){
-      print(lastRequestTime.add(Duration(seconds: 30)).toString() + " > " + DateTime.now().toString());
-      print("too early");
-      return;
+    int latestId;
+    if (tweets.isEmpty) {
+      latestId = -1;
+    } else {
+      latestId = tweets[0].id;
     }
-    lastRequestTime = DateTime.now();
-    List<Tweet> tweetsData = await TwitterAPI().getTimeline(await db.getLatestTweetId());
-    for(Tweet tweet in tweetsData) await db.addTweet(tweet);
-    tweets = await db.getTweets() ?? [];
+    List<Tweet> additionTweets = await db.getTweetsAfterId(latestId, 10);
+    tweets.insertAll(0, additionTweets);
+    tweets = tweets.sublist(0, 20);
+    // TODO: ensureVisible
+
     notifyListeners();
   }
 
   Future<Color> likeColor(int index) async {
-    return await TwitterAPI().isLiked(tweets.elementAt(index).id.toString())? Colors.red : Colors.white;
+    return await TwitterAPI().isLiked(tweets.elementAt(index).id.toString())
+        ? Colors.red
+        : Colors.white;
   }
 
   void refresh() {

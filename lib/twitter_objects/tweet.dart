@@ -44,6 +44,7 @@ class Tweet {
     this.tweetObject = tweetObject;
     // var tweetObject = new JsonDecoder().convert(tweetString);
     created_at = tweetObject["created_at"]?.toString().trim() ?? "";
+    print("tweetObject" + tweetObject.toString());
     created_at_date = DateFormat('EEE MMM dd hh:mm:ss +0000 yyyy', 'en_US').parse(created_at);
     id = tweetObject["id"];
     id_str = tweetObject["id_str"];
