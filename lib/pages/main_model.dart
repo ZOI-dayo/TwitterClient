@@ -46,9 +46,13 @@ class MainModel extends ChangeNotifier {
     return prefs?.getString('twitter_token_secret') ?? "";
   }
 
-  Future<bool> setStringPref(String key, String value) {
+  Future<String> getStringPref(String key) async {
+    return prefs?.getString(key) ?? "";
+  }
+
+  Future<bool> setStringPref(String key, String value, {bool notify=true}) {
     Future<bool>? result = prefs?.setString(key, value);
-    notifyListeners();
+    if(notify) notifyListeners();
     return result ?? Future.value(false);
   }
 

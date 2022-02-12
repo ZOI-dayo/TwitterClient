@@ -6,6 +6,7 @@ import 'package:twitter_test/pages/message_page.dart';
 import 'package:twitter_test/pages/notification_page.dart';
 
 import 'home_model.dart';
+import 'main_model.dart';
 import 'profile_bar.dart';
 import 'search_page.dart';
 import 'timeline_page.dart';
@@ -14,7 +15,7 @@ class HomePage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => HomeModel(),
+      create: (context) => HomeModel(Provider.of<MainModel>(context, listen: false)),
       child: MaterialApp(
         home: _HomePage(),
       ),

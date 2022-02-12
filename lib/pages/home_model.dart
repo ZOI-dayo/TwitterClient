@@ -17,6 +17,12 @@ class HomeModel extends ChangeNotifier {
   MyDatabase db = MyDatabase();
   bool isLoaded = false;
   DateTime lastRequestTime = DateTime(1,1);
+  MainModel? mainModel;
+
+  HomeModel(MainModel model){
+    mainModel = model;
+    mainModel!.getStringPref("lastRequestTime").then((value) => {if(value.isNotEmpty) lastRequestTime= DateTime.parse(value)});
+  }
 
   int Count(BuildContext context) {
     if(tweets.isEmpty){
@@ -34,6 +40,7 @@ class HomeModel extends ChangeNotifier {
       return;
     }
     lastRequestTime = DateTime.now();
+    mainModel!.setStringPref("lastRequestTime", lastRequestTime.toIso8601String());
     MainModel main = Provider.of<MainModel>(context, listen: false);
     print(main.platform.signatureMethod);
     print(main.clientCredentials);
