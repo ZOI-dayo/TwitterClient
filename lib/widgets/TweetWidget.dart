@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../pages/timeline_model.dart';
+import '../pages/home_model.dart';
 import '../twitter_objects/tweet.dart';
 import '../twitter_api.dart';
 
@@ -36,7 +36,7 @@ class TweetWidget extends Container {
                         TwitterAPI().like(tweet.id_str);
                         notifier.call();
                       },
-                      child: Consumer<TimelineModel>(
+                      child: Consumer<HomeModel>(
                         builder: (_, __, ___) {
                           return FutureBuilder(
                             future: TweetWidget.getLikeColor(tweet),
