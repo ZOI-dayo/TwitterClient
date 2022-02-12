@@ -33,7 +33,7 @@ class _SearchPage extends StatelessWidget {
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: context
-                            .watch<TimelineModel>()
+                            .watch<HomeModel>()
                             .tweets
                             .map((Tweet t) => TweetWidget(
                                 () => {context.read<TimelineModel>().refresh()},
