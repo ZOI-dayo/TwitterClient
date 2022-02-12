@@ -83,8 +83,7 @@ class MyDatabase {
     List<Tweet> tweetsData = await TwitterAPI().getTimeline(await getLatestTweetId());
     for (Tweet tweet in tweetsData) await addTweet(tweet);
     matchTweetsData = (await _db?.query("tweets", where: "id > " + latestId.toString(), limit: count, orderBy: "id DESC"));
-    print(matchTweetsData);
-    return matchTweetsData?.map((tData) => new Tweet(tData["content"] as Map)).toList() ?? [];
+    return matchTweetsData?.map((tData) => new Tweet(jsonDecode(tData["content"].toString()))).toList() ?? [];
   }
 
 }

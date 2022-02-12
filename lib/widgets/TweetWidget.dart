@@ -1,14 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:twitter_test/pages/timeline_model.dart';
 
 import '../pages/home_model.dart';
 import '../twitter_objects/tweet.dart';
 import '../twitter_api.dart';
 
 class TweetWidget extends Container {
-  TweetWidget(Function notifier, Tweet tweet)
+  TweetWidget(TimelineModel model, Tweet tweet)
       : super(
+          key: model.issueTweetKey(tweet.id),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.red),
             borderRadius: BorderRadius.circular(10),
@@ -34,7 +36,7 @@ class TweetWidget extends Container {
                     ElevatedButton(
                       onPressed: () {
                         TwitterAPI().like(tweet.id_str);
-                        notifier.call();
+                        model.refresh();
                       },
                       child: Consumer<HomeModel>(
                         builder: (_, __, ___) {

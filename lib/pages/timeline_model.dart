@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:twitter_test/my_database.dart';
 
 import '../twitter_api.dart';
@@ -12,6 +13,8 @@ class TimelineModel extends ChangeNotifier {
   MyDatabase db = MyDatabase();
   bool isLoaded = false;
   DateTime lastRequestTime = DateTime(1, 1);
+  GlobalKey scrollWidgetKey = GlobalKey();
+  Map<int, GlobalKey> tweetKeyList = Map();
 
   int Count(BuildContext context) {
     if (tweets.isEmpty) {
@@ -30,10 +33,19 @@ class TimelineModel extends ChangeNotifier {
     }
     List<Tweet> additionTweets = await db.getTweetsAfterId(latestId, 10);
     tweets.insertAll(0, additionTweets);
-    tweets = tweets.sublist(0, 20);
-    // TODO: ensureVisible
-
+    if (tweets.length > 20) tweets = tweets.sublist(0, 20);
     notifyListeners();
+    SchedulerBinding.instance?.addPostFrameCallback((_) => {
+          if (tweetKeyList.containsKey(latestId) && tweetKeyList[latestId]!.currentContext != null)
+            {
+              Scrollable.ensureVisible(
+                  tweetKeyList[latestId]!.currentContext!,
+                  alignment: 0.0,
+                  duration: Duration.zero,
+                  curve: Curves.ease,
+                  alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd)
+            }
+        });
   }
 
   Future<Color> likeColor(int index) async {
@@ -44,5 +56,11 @@ class TimelineModel extends ChangeNotifier {
 
   void refresh() {
     notifyListeners();
+  }
+
+  GlobalKey issueTweetKey(int id) {
+    GlobalKey key = GlobalKey();
+    tweetKeyList[id] = key;
+    return key;
   }
 }
