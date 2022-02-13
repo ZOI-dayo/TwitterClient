@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
-import 'package:oauth1/oauth1.dart' as oauth1;
 import 'package:twitter_test/my_database.dart';
+import '../twitter_api.dart';
 import '../twitter_objects/tweet.dart';
 import 'main_model.dart';
 
@@ -15,12 +14,14 @@ class HomeModel extends ChangeNotifier {
   List<Tweet> tweets = [];
   MyDatabase db = MyDatabase();
   bool isLoaded = false;
-  DateTime lastRequestTime = DateTime(1,1);
+  DateTime lastApiRequestTime = DateTime(1,1);
   MainModel? mainModel;
+  GlobalKey scrollWidgetKey = GlobalKey();
+  Map<int, GlobalKey> tweetKeyList = Map();
 
   HomeModel(MainModel model){
     mainModel = model;
-    mainModel!.getStringPref("lastRequestTime").then((value) => {if(value.isNotEmpty) lastRequestTime= DateTime.parse(value)});
+    mainModel!.getStringPref("lastApiRequestTime").then((value) => {if(value.isNotEmpty) lastApiRequestTime= DateTime.parse(value)});
   }
 
   int Count(BuildContext context) {
@@ -32,43 +33,57 @@ class HomeModel extends ChangeNotifier {
   }
 
   void getTimeline(BuildContext context) async {
-    print(lastRequestTime);
-    if(lastRequestTime.add(Duration(seconds: 30)).millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch){
-      print(lastRequestTime.add(Duration(seconds: 30)).toString() + " > " + DateTime.now().toString());
-      print("too early");
-      return;
+    int latestId;
+    if (tweets.isEmpty) {
+      latestId = -1;
+    } else {
+      latestId = tweets[0].id;
     }
-    lastRequestTime = DateTime.now();
-    mainModel!.setStringPref("lastRequestTime", lastRequestTime.toIso8601String());
-    MainModel main = Provider.of<MainModel>(context, listen: false);
-    print(main.platform.signatureMethod);
-    print(main.clientCredentials);
-    var client = new oauth1.Client(
-        main.platform.signatureMethod,
-        main.clientCredentials,
-        new oauth1.Credentials(
-            await main.loadToken(), await main.loadTokenSecret()));
-    String? latestTweetId = await db.getLatestTweetId();
-    final result = await client.get(Uri.parse(
-        'https://api.twitter.com/1.1/statuses/home_timeline.json?count=200' + (latestTweetId == null ? "" : "&since_id=" + latestTweetId)));
-    // final result = await client.get(Uri.parse('https://api.twitter.com/1.1/statuses/home_timeline.json?count=200'));
-    print((await db.getLatestTweetId() ?? ""));
-    print(result.request?.url.toString() ?? "");
-    apiResponse = result.body;
-    print("apiResponse");
-    print(apiResponse);
-    var decodedResult = jsonDecode(apiResponse) as List;
-    print(decodedResult);
-    decodedResult.forEach((element) => {
-      // tweets.add(new Tweet(element))
-      db.addTweet(new Tweet(element))
+    List<Tweet> additionTweets = await db.getTweetsAfterId(
+        latestId,
+        10,
+        lastApiRequestTime: lastApiRequestTime,
+        callback: (_,__,lastTime) => {
+          mainModel!.setStringPref(
+              "lastApiRequestTime", (lastTime ?? DateTime.now()).toIso8601String()
+          ),
+          lastApiRequestTime = lastTime ?? DateTime.now()
+        });
+    tweets.insertAll(0, additionTweets);
+    if (tweets.length > 20) tweets = tweets.sublist(0, 20);
+    SchedulerBinding.instance?.addPostFrameCallback((_) => {
+      if (tweetKeyList.containsKey(latestId) && tweetKeyList[latestId]!.currentContext != null)
+        {
+          print("ensure"),
+          Scrollable.ensureVisible(
+              tweetKeyList[latestId]!.currentContext!,
+              alignment: 0.0,
+              duration: Duration(milliseconds: 500),
+              curve: Curves.ease,
+              alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd)
+        }
     });
-    tweets = await db.getTweets() ?? [];
     notifyListeners();
+  }
+
+  Future<Color> likeColor(int index) async {
+    return await TwitterAPI().isLiked(tweets.elementAt(index).id.toString())
+        ? Colors.red
+        : Colors.white;
+  }
+
+  GlobalKey issueTweetKey(int id) {
+    GlobalKey key = GlobalKey();
+    tweetKeyList[id] = key;
+    return key;
   }
 
   void selectTab(int index){
     selectedTab = index;
+    notifyListeners();
+  }
+
+  void refresh() {
     notifyListeners();
   }
 

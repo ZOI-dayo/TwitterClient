@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
 
-import 'home_model.dart';
+import './home_model.dart';
 import './timeline_model.dart';
 import '../twitter_objects/tweet.dart';
 import '../widgets/TweetWidget.dart';
@@ -28,16 +28,16 @@ class _SearchPage extends StatelessWidget {
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
-                context.read<TimelineModel>().getTimeline(context);
+                context.read<HomeModel>().getTimeline(context);
               },
               child: ListView(
-                  key: context.read<TimelineModel>().scrollWidgetKey,
+                  key: context.read<HomeModel>().scrollWidgetKey,
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: context
-                            .watch<TimelineModel>()
+                            .watch<HomeModel>()
                             .tweets
                             .map((Tweet t) => TweetWidget(
-                                context.read<TimelineModel>(),
+                                context.read<HomeModel>(),
                                 t))
                             .toList())),
               ),

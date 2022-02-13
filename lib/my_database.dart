@@ -58,32 +58,28 @@ class MyDatabase {
     return res?.isNotEmpty ?? false ? res?.map((e) => new Tweet(JsonDecoder().convert(e["content"].toString()))).toList() : [];
   }
 
-  Future<String?> getLatestTweetId() async {
-    final maxId = (await _db?.rawQuery("SELECT MAX(id) as max_id from tweets"))?[0]["max_id"].toString();
-    print(maxId.toString());
-    return maxId;
-  }
-
-  Future<List<Tweet>> getTweetsAfterId(int latestId, int count) async {
+  Future<List<Tweet>> getTweetsAfterId(int latestId, int count, {DateTime? lastApiRequestTime, void callback(int latestId, int count, DateTime? lastApiRequestTime)?}) async {
     List<Map<String, Object?>>? matchTweetsData = (await _db?.query("tweets", where: "id > " + latestId.toString(), limit: count, orderBy: "id DESC"));
     if(matchTweetsData != null && matchTweetsData.length == 10){
       print(matchTweetsData);
       return matchTweetsData.map((tData) => new Tweet(jsonDecode(tData["content"] as String) as Map)).toList();
     }
+    if(lastApiRequestTime != null){
+      if (lastApiRequestTime.add(Duration(seconds: 5)).millisecondsSinceEpoch >
+          DateTime.now().millisecondsSinceEpoch) {
+        print("too early");
+        return [];
+      }
+      lastApiRequestTime = DateTime.now();
+    }
 
-    // if (lastRequestTime.add(Duration(seconds: 30)).millisecondsSinceEpoch >
-    //     DateTime.now().millisecondsSinceEpoch) {
-    //   print(lastRequestTime.add(Duration(seconds: 30)).toString() +
-    //       " > " +
-    //       DateTime.now().toString());
-    //   print("too early");
-    //   return;
-    // }
-    // lastRequestTime = DateTime.now();
-    List<Tweet> tweetsData = await TwitterAPI().getTimeline(await getLatestTweetId());
+
+    List<Tweet> tweetsData = await TwitterAPI().getTimeline(latestId.toString());
     for (Tweet tweet in tweetsData) await addTweet(tweet);
     matchTweetsData = (await _db?.query("tweets", where: "id > " + latestId.toString(), limit: count, orderBy: "id DESC"));
-    return matchTweetsData?.map((tData) => new Tweet(jsonDecode(tData["content"].toString()))).toList() ?? [];
+    List<Tweet> result = matchTweetsData?.map((tData) => new Tweet(jsonDecode(tData["content"].toString()))).toList() ?? [];
+    callback?.call(latestId, count, lastApiRequestTime);
+    return result;
   }
 
 }
