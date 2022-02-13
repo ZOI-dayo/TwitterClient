@@ -58,7 +58,7 @@ class HomeModel extends ChangeNotifier {
           Scrollable.ensureVisible(
               tweetKeyList[latestId]!.currentContext!,
               alignment: 0.0,
-              duration: Duration(milliseconds: 500),
+              duration: Duration.zero,
               curve: Curves.ease,
               alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd)
         }

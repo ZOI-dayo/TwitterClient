@@ -27,20 +27,20 @@ class _SearchPage extends StatelessWidget {
         children: [
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () async {
-                context.read<HomeModel>().getTimeline(context);
-              },
-              child: ListView(
-                  key: context.read<HomeModel>().scrollWidgetKey,
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: context
+                onRefresh: () async {
+                  context.read<HomeModel>().getTimeline(context);
+                },
+                child: SingleChildScrollView(
+                    key: context.read<HomeModel>().scrollWidgetKey,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                        children: context
                             .watch<HomeModel>()
                             .tweets
-                            .map((Tweet t) => TweetWidget(
-                                context.read<HomeModel>(),
-                                t))
-                            .toList())),
-              ),
+                            .map((Tweet t) =>
+                                TweetWidget(context.read<HomeModel>(), t))
+                            .toList()))),
+          ),
         ],
       ),
     );
