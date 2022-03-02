@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import '../widgets/TweetImage.dart';
 
 import 'entities.dart';
 import 'user.dart';
@@ -95,7 +96,7 @@ class Tweet {
     Tweet rootTweet = retweeted_status ?? this;
 
     final images = extended_entities?.media
-            .map((e) => Container(width: 100, height: 100, child: Image.network(e.media_url_https, fit: BoxFit.contain)))
+            .map((e) => Image.network(e.media_url_https, fit: BoxFit.contain))
             .toList() ??
         [];
     final tweetContent = Column(children: [
@@ -103,9 +104,7 @@ class Tweet {
       // imageView,
       if(rootTweet == retweeted_status) Text("RT"),
       Text(rootTweet.text),
-      if (images.isNotEmpty) Row(
-          children: images
-      ),
+      if (images.isNotEmpty) TweetImage(images),
     ]);
     return tweetContent;
   }

@@ -11,7 +11,7 @@ class TimelinePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => TimelineModel(),
+      create: (context) => TimelineModel(context),
       child: MaterialApp(
         home: _SearchPage(),
       ),
@@ -28,7 +28,7 @@ class _SearchPage extends StatelessWidget {
           Expanded(
             child: RefreshIndicator(
                 onRefresh: () async {
-                  context.read<HomeModel>().getTimeline(context);
+                  context.read<HomeModel>().getTimeline();
                 },
                 child: SingleChildScrollView(
                     key: context.read<HomeModel>().scrollWidgetKey,
@@ -38,8 +38,8 @@ class _SearchPage extends StatelessWidget {
                             .watch<HomeModel>()
                             .tweets
                             .map((Tweet t) =>
-                                TweetWidget(context.read<HomeModel>(), t))
-                            .toList()))),
+                                TweetWidget(context.read<HomeModel>(), t) as Widget)
+                            .toList() + [SizedBox(height: 2000,width: 10,)]))),
           ),
         ],
       ),

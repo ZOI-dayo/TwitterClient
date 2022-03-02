@@ -22,17 +22,18 @@ class HomeModel extends ChangeNotifier {
   HomeModel(MainModel model){
     mainModel = model;
     mainModel!.getStringPref("lastApiRequestTime").then((value) => {if(value.isNotEmpty) lastApiRequestTime= DateTime.parse(value)});
+    this.getTimeline();
   }
 
-  int Count(BuildContext context) {
+  int Count() {
     if(tweets.isEmpty){
-      getTimeline(context);
+      getTimeline();
       return 0;
     }
     return tweets.length;
   }
 
-  void getTimeline(BuildContext context) async {
+  void getTimeline() async {
     int latestId;
     if (tweets.isEmpty) {
       latestId = -1;

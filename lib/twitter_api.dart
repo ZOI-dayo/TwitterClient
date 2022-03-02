@@ -25,7 +25,11 @@ class TwitterAPI {
   );
   var client;
 
+  bool isInitialized = false;
+
   void init() async {
+    if(isInitialized) return;
+    isInitialized = true;
     if(prefs == null) prefs = await SharedPreferences.getInstance();
     if(client == null) client = new oauth1.Client(
         _platform.signatureMethod, _clientCredentials,
@@ -42,9 +46,11 @@ class TwitterAPI {
   }
 
   Future<dynamic> _request(String location, [String type = 'GET', String version = '1.1']) async {
+
     final result;
     switch(type){
       case 'GET':
+        print(client);
         result = await client.get(Uri.parse('https://api.twitter.com/' + version + '/' + location));
         break;
       case 'POST':
