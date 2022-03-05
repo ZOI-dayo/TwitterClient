@@ -11,36 +11,48 @@ class HomeModel extends ChangeNotifier {
   int selectedTab = 0;
 
   String apiResponse = "";
-  List<Tweet> tweets = [];
+  List<Tweet> _tweets = [];
   MyDatabase db = MyDatabase();
   bool isLoaded = false;
   DateTime lastApiRequestTime = DateTime(1,1);
   MainModel? mainModel;
   GlobalKey scrollWidgetKey = GlobalKey();
   Map<int, GlobalKey> tweetKeyList = Map();
+  TwitterAPI _twitterAPI = TwitterAPI();
 
   HomeModel(MainModel model){
     mainModel = model;
     mainModel!.getStringPref("lastApiRequestTime").then((value) => {if(value.isNotEmpty) lastApiRequestTime= DateTime.parse(value)});
-    this.getTimeline();
+    _twitterAPI.init();
   }
 
   int Count() {
-    if(tweets.isEmpty){
+    if(_tweets.isEmpty){
       getTimeline();
       return 0;
     }
-    return tweets.length;
+    return _tweets.length;
   }
 
-  void getTimeline() async {
+  List<Tweet> getTimeline() {
+    refresh();
+    return _tweets;
+  }
+
+  void refresh() async {
     int latestId;
-    if (tweets.isEmpty) {
+    if (_tweets.isEmpty) {
       latestId = -1;
     } else {
-      latestId = tweets[0].id;
+      latestId = _tweets[0].id;
     }
-    List<Tweet> additionTweets = await db.getTweetsAfterId(
+    if(!_twitterAPI.isInitialized){
+      await _twitterAPI.init();
+    }
+
+    if(_twitterAPI.client == null) return;
+
+    List<Tweet> additionTweets = await _twitterAPI.getTimeline(
         latestId,
         10,
         lastApiRequestTime: lastApiRequestTime,
@@ -50,8 +62,9 @@ class HomeModel extends ChangeNotifier {
           ),
           lastApiRequestTime = lastTime ?? DateTime.now()
         });
-    tweets.insertAll(0, additionTweets);
-    if (tweets.length > 20) tweets = tweets.sublist(0, 20);
+    _tweets.insertAll(0, additionTweets);
+
+    if (_tweets.length > 20) _tweets = _tweets.sublist(0, 20);
     SchedulerBinding.instance?.addPostFrameCallback((_) => {
       if (tweetKeyList.containsKey(latestId) && tweetKeyList[latestId]!.currentContext != null)
         {
@@ -68,7 +81,7 @@ class HomeModel extends ChangeNotifier {
   }
 
   Future<Color> likeColor(int index) async {
-    return await TwitterAPI().isLiked(tweets.elementAt(index).id.toString())
+    return await TwitterAPI().isLiked(_tweets.elementAt(index).id.toString())
         ? Colors.red
         : Colors.white;
   }
@@ -83,9 +96,4 @@ class HomeModel extends ChangeNotifier {
     selectedTab = index;
     notifyListeners();
   }
-
-  void refresh() {
-    notifyListeners();
-  }
-
 }

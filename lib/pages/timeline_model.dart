@@ -7,6 +7,5 @@ import 'home_model.dart';
 
 class TimelineModel extends ChangeNotifier {
   TimelineModel(BuildContext context){
-    context.read<HomeModel>().getTimeline();
   }
 }

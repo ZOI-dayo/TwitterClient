@@ -1,14 +1,15 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
 import 'package:shared_preferences/shared_preferences.dart';
 import './twitter_objects/tweet.dart';
+import 'my_database.dart';
 
 class TwitterAPI {
   static final TwitterAPI _instance = TwitterAPI._internal();
   TwitterAPI._internal();
   factory TwitterAPI() {
-    _instance.init();
     return _instance;
   }
 
@@ -27,7 +28,7 @@ class TwitterAPI {
 
   bool isInitialized = false;
 
-  void init() async {
+  Future<void> init() async {
     if(isInitialized) return;
     isInitialized = true;
     if(prefs == null) prefs = await SharedPreferences.getInstance();
@@ -76,7 +77,34 @@ class TwitterAPI {
     return likes.contains(tweetId);
   }
 
-  Future<List<Tweet>> getTimeline(String? latestTweetId) async {
+  Future<List<Tweet>> getTimeline(int latestId, int count, {DateTime? lastApiRequestTime, void callback(int latestId, int count, DateTime? lastApiRequestTime)?}) async {
+    List<Tweet>? matchTweetsData = await MyDatabase().getTweetsAfterId(latestId, count);
+
+    if(!matchTweetsData.isEmpty) {
+      matchTweetsData.forEach((element) { debugPrint(element.toString());});
+      return matchTweetsData;
+    }
+
+    if(lastApiRequestTime != null){
+      if (lastApiRequestTime.add(Duration(seconds: 5)).millisecondsSinceEpoch >
+          DateTime.now().millisecondsSinceEpoch) {
+        print("too early");
+        return [];
+      }
+      lastApiRequestTime = DateTime.now();
+    }
+
+
+    List<Tweet> tweetsData = await _getTimeline(latestId.toString());
+    for (Tweet tweet in tweetsData) {
+      await MyDatabase().addTweet(tweet);
+      matchTweetsData.add(tweet);
+    }
+
+    return matchTweetsData;
+  }
+
+  Future<List<Tweet>> _getTimeline(String? latestTweetId) async {
     var result = await _request('statuses/home_timeline.json?count=200' + (latestTweetId == null ? "" : "&since_id=" + latestTweetId), 'GET');
     if(result is Map && result.containsKey("errors")){
       print("ERROR : " + result.toString());
