@@ -46,7 +46,8 @@ class Tweet {
     // var tweetObject = new JsonDecoder().convert(tweetString);
     created_at = tweetObject["created_at"]?.toString().trim() ?? "";
     print("tweetObject" + tweetObject.toString());
-    created_at_date = DateFormat('EEE MMM dd hh:mm:ss +0000 yyyy', 'en_US').parse(created_at);
+    created_at_date =
+        DateFormat('EEE MMM dd hh:mm:ss +0000 yyyy', 'en_US').parse(created_at);
     id = tweetObject["id"];
     id_str = tweetObject["id_str"];
     text = tweetObject["text"] ?? "";
@@ -81,7 +82,7 @@ class Tweet {
     return toStringWithIndent(0, 2);
   }
 
-  Widget getTweetContent() {
+  Widget getTweetContent(BuildContext context) {
     // final List<String> images = [];
     // RegExp(r'https:\/\/t.co\/\S+').allMatches(text).forEach((match) {
     //   images.add(match.group(0).toString() ?? "");
@@ -95,16 +96,18 @@ class Tweet {
 
     Tweet rootTweet = retweeted_status ?? this;
 
-    final images = extended_entities?.media
-            .map((e) => Image.network(e.media_url_https, fit: BoxFit.contain))
-            .toList() ??
-        [];
+    // final images = extended_entities?.media
+    //         .map((e) => Image.network(e.media_url_https, fit: BoxFit.contain))
+    //         .toList() ??
+    //     [];
+    final imageUrls =
+        extended_entities?.media.map((e) => e.media_url_https).toList() ?? [];
     final tweetContent = Column(children: [
       // imageRemovedText,
       // imageView,
-      if(rootTweet == retweeted_status) Text("RT"),
+      if (rootTweet == retweeted_status) Text("RT"),
       Text(rootTweet.text),
-      if (images.isNotEmpty) TweetImage(images),
+      if (imageUrls.isNotEmpty) TweetImage(context, imageUrls),
     ]);
     return tweetContent;
   }
