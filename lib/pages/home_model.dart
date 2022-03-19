@@ -37,7 +37,7 @@ class HomeModel extends ChangeNotifier {
   Future<List<Tweet>> getTimeline() async {
     int latestId;
     if (_tweets.isEmpty) {
-      latestId = -1;
+      latestId = 1;
     } else {
       latestId = _tweets[0].id;
     }
