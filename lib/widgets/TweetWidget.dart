@@ -13,17 +13,11 @@ class TweetWidget extends StatelessWidget {
   TweetWidget(this.model, this.tweet) : super();
 
   static Future<Color> getLikeColor(Tweet tweet) async {
-    return await TwitterAPI().isLiked(tweet.id_str) ? Colors.red : Colors.white;
+    return tweet.favorited ? Colors.red : Colors.white;
   }
 
   static Future<Color> getRetweetColor(Tweet tweet) async {
-    // return await TwitterAPI().isLiked(tweet.id_str) ? Colors.red : Colors.white;
-    return Colors.white;
-  }
-
-  static Future<Color> getBookmarkColor(Tweet tweet) async {
-    // return await TwitterAPI().isLiked(tweet.id_str) ? Colors.red : Colors.white;
-    return Colors.white;
+    return tweet.retweeted ? Colors.red : Colors.white;
   }
 
   @override
@@ -64,7 +58,7 @@ class TweetWidget extends StatelessWidget {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          TwitterAPI().like(tweet.id_str);
+                          TwitterAPI().like(tweet);
                           model.refresh();
                         },
                         child: Consumer<HomeModel>(
@@ -93,7 +87,10 @@ class TweetWidget extends StatelessWidget {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          TwitterAPI().retweet(tweet);
+                          model.refresh();
+                        },
                         child: Consumer<HomeModel>(
                           builder: (_, __, ___) {
                             return Row(
@@ -125,18 +122,7 @@ class TweetWidget extends StatelessWidget {
                           builder: (_, __, ___) {
                             return Row(
                               children: [
-                                FutureBuilder(
-                                  future: TweetWidget.getBookmarkColor(tweet),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<Color> snapshot) {
-                                    if (snapshot.hasData) {
-                                      return Icon(Icons.bookmark_border,
-                                          color: snapshot.data);
-                                    } else {
-                                      return Icon(Icons.bookmark_border);
-                                    }
-                                  },
-                                ),
+                                Icon(Icons.share),
                                 Text("10"),
                               ],
                             );

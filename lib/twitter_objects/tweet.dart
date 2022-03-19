@@ -33,8 +33,8 @@ class Tweet {
   // Entities entities;
   late final ExpandedEntities? extended_entities;
 
-  // bool? favorited;
-  // bool retweeted;
+  late final bool favorited;
+  late final bool retweeted;
   // bool? possibly_sensitive;
   // String filter_level;
   // String? lang; // BCP 47  Lang型?で保存?
@@ -60,6 +60,8 @@ class Tweet {
     extended_entities = tweetObject.containsKey("extended_entities")
         ? new ExpandedEntities(tweetObject["extended_entities"])
         : null;
+    favorited = tweetObject["favorited"];
+    retweeted = tweetObject["retweeted"];
   }
 
   String toStringWithIndent(int offset, int indent) {

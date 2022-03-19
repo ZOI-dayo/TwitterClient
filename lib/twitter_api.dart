@@ -1,15 +1,14 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
 import 'package:shared_preferences/shared_preferences.dart';
 import './twitter_objects/tweet.dart';
-import 'my_database.dart';
 
 class TwitterAPI {
   static final TwitterAPI _instance = TwitterAPI._internal();
   TwitterAPI._internal();
   factory TwitterAPI() {
+    _instance.init();
     return _instance;
   }
 
@@ -24,9 +23,11 @@ class TwitterAPI {
     'nGTObtxzjKs0XawEvbxx96RgC',
     'I6z4NZ1BhgXK0oBwDVfpKmLiPJUMIFcnnQUD7PSQMaVfuDqEY0',
   );
-  var client;
+  late final oauth1.Client client;
 
   bool isInitialized = false;
+
+  late final User myTwitterAccount;
 
   Future<void> init() async {
     if(isInitialized) return;
@@ -35,6 +36,7 @@ class TwitterAPI {
     if(client == null) client = new oauth1.Client(
         _platform.signatureMethod, _clientCredentials,
         new oauth1.Credentials(await _loadToken(prefs), await _loadTokenSecret(prefs)));
+    myTwitterAccount = _request('users/show.json') as User;
   }
   Future<String> _loadToken(prefs) async {
     print('Access Token: ${prefs.getString('twitter_token')}');
@@ -46,7 +48,7 @@ class TwitterAPI {
     return prefs.getString('twitter_token_secret') ?? "";
   }
 
-  Future<dynamic> _request(String location, [String type = 'GET', String version = '1.1']) async {
+  Future<dynamic> _request(String location, [String type = 'GET', String? sendBody, String version = '1.1']) async {
 
     final result;
     switch(type){
@@ -55,7 +57,7 @@ class TwitterAPI {
         result = await client.get(Uri.parse('https://api.twitter.com/' + version + '/' + location));
         break;
       case 'POST':
-        result = await client.post(Uri.parse('https://api.twitter.com/' + version + '/' + location));
+        result = await client.post(Uri.parse('https://api.twitter.com/' + version + '/' + location), headers: sendBody == null ? null : {'Content-type': 'application/json'}, body: sendBody);
         break;
       default:
         return {};
@@ -65,16 +67,15 @@ class TwitterAPI {
   }
 
   List<String> likes = [];
-  void like(String tweetId) async {
-    _request('favorites/create.json?id=' + tweetId, 'POST');
-    likes.add(tweetId);
+  void like(Tweet tweet) async {
+    _request('favorites/create.json?id=' + tweet.id_str, 'POST');
+    likes.add(tweet.id_str);
   }
 
-  Future<bool> isLiked(String tweetId) async {
-    if(likes.length <= 0) {
-      likes = ((await _request('favorites/list.json?count=200')) as List).map((e) => new Tweet(e).id.toString()).toList();
-    }
-    return likes.contains(tweetId);
+  List<String> retweets = [];
+  void retweet(Tweet tweet) async {
+    _request('users/'+ myTwitterAccount.id_str +'/retweets', 'POST', '{"tweet_id": ' + tweet.id_str + '}', '2');
+    retweets.add(tweet.id_str);
   }
 
   Future<List<Tweet>> getTimeline(int latestId, int count, {DateTime? lastApiRequestTime, void callback(int latestId, int count, DateTime? lastApiRequestTime)?}) async {
