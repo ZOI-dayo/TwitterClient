@@ -34,12 +34,7 @@ class HomeModel extends ChangeNotifier {
     return _tweets.length;
   }
 
-  List<Tweet> getTimeline() {
-    refresh();
-    return _tweets;
-  }
-
-  void refresh() async {
+  Future<List<Tweet>> getTimeline() async {
     int latestId;
     if (_tweets.isEmpty) {
       latestId = -1;
@@ -50,7 +45,7 @@ class HomeModel extends ChangeNotifier {
       await _twitterAPI.init();
     }
 
-    if(_twitterAPI.client == null) return;
+    if(_twitterAPI.client == null) [];
 
     List<Tweet> additionTweets = await _twitterAPI.getTimeline(
         latestId,
@@ -77,6 +72,11 @@ class HomeModel extends ChangeNotifier {
               alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd)
         }
     });
+    return _tweets;
+  }
+
+  Future<void> refresh() async {
+    getTimeline();
     notifyListeners();
   }
 
