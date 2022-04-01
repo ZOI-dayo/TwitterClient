@@ -28,18 +28,21 @@ class _SearchPage extends StatelessWidget {
           Expanded(
             child: RefreshIndicator(
                 onRefresh: () async {
-                  context.read<HomeModel>().getTimeline();
+                  context.read<HomeModel>().refresh();
                 },
-                child: SingleChildScrollView(
-                    key: context.read<HomeModel>().scrollWidgetKey,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                        children: context
-                            .watch<HomeModel>()
-                            .tweets
-                            .map((Tweet t) =>
-                                TweetWidget(context.read<HomeModel>(), t) as Widget)
-                            .toList() + [SizedBox(height: 2000,width: 10,)]))),
+                child: FutureBuilder(
+                  future: context.read<HomeModel>().getTimeline(),
+                    builder: (BuildContext context, AsyncSnapshot<List<Tweet>> snapshot) {
+                    return SingleChildScrollView(
+                        key: context.read<HomeModel>().scrollWidgetKey,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                            children: snapshot.data
+                                ?.map((Tweet t) =>
+                                    TweetWidget(context.read<HomeModel>(), t) as Widget)
+                                .toList() ?? [Text('no items')]));
+                  }
+                )),
           ),
         ],
       ),
