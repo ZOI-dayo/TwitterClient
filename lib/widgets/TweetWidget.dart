@@ -12,12 +12,12 @@ class TweetWidget extends StatelessWidget {
 
   TweetWidget(this.model, this.tweet) : super();
 
-  static Future<Color> getLikeColor(Tweet tweet) async {
-    return tweet.favorited ? Colors.red : Colors.white;
+  static Color getLikeColor(Tweet tweet) {
+    return tweet.favorited || TwitterAPI().likes.contains(tweet.id_str) ? Colors.red : Colors.white;
   }
 
-  static Future<Color> getRetweetColor(Tweet tweet) async {
-    return tweet.retweeted ? Colors.red : Colors.white;
+  static Color getRetweetColor(Tweet tweet)  {
+    return tweet.retweeted || TwitterAPI().retweets.contains(tweet.id_str) ? Colors.red : Colors.white;
   }
 
   @override
@@ -47,7 +47,6 @@ class TweetWidget extends StatelessWidget {
                             return Row(
                               children: [
                                 Icon(Icons.comment, color: Colors.white),
-                                Text("10"),
                               ],
                             );
                           },
@@ -59,28 +58,16 @@ class TweetWidget extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {
                           TwitterAPI().like(tweet);
-                          model.refresh();
+                          TwitterAPI()
+                              .updateTweet(tweet)
+                              .then((newTweet) => this.tweet = newTweet);
+                          model.notifyListeners();
                         },
-                        child: Consumer<HomeModel>(
-                          builder: (_, __, ___) {
-                            return Row(
-                              children: [
-                                FutureBuilder(
-                                  future: TweetWidget.getLikeColor(tweet),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<Color> snapshot) {
-                                    if (snapshot.hasData) {
-                                      return Icon(Icons.favorite,
-                                          color: snapshot.data);
-                                    } else {
-                                      return Icon(Icons.favorite);
-                                    }
-                                  },
-                                ),
-                                Text("10"),
-                              ],
-                            );
-                          },
+                        child: Row(
+                          children: [
+                            Icon(Icons.favorite, color: TweetWidget.getLikeColor(tweet)),
+                            Text(tweet.favorite_count.toString()),
+                          ],
                         ),
                         style: ElevatedButton.styleFrom(
                           primary: Colors.transparent,
@@ -89,28 +76,16 @@ class TweetWidget extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {
                           TwitterAPI().retweet(tweet);
-                          model.refresh();
+                          TwitterAPI()
+                              .updateTweet(tweet)
+                              .then((newTweet) => this.tweet = newTweet);
+                          model.notifyListeners();
                         },
-                        child: Consumer<HomeModel>(
-                          builder: (_, __, ___) {
-                            return Row(
-                              children: [
-                                FutureBuilder(
-                                  future: TweetWidget.getRetweetColor(tweet),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<Color> snapshot) {
-                                    if (snapshot.hasData) {
-                                      return Icon(Icons.loop,
-                                          color: snapshot.data);
-                                    } else {
-                                      return Icon(Icons.loop);
-                                    }
-                                  },
-                                ),
-                                Text("10"),
-                              ],
-                            );
-                          },
+                        child: Row(
+                          children: [
+                            Icon(Icons.loop, color: TweetWidget.getRetweetColor(tweet)),
+                            Text(tweet.retweet_count.toString()),
+                          ],
                         ),
                         style: ElevatedButton.styleFrom(
                           primary: Colors.transparent,
@@ -121,10 +96,7 @@ class TweetWidget extends StatelessWidget {
                         child: Consumer<HomeModel>(
                           builder: (_, __, ___) {
                             return Row(
-                              children: [
-                                Icon(Icons.share),
-                                Text("10"),
-                              ],
+                              children: [Icon(Icons.share)],
                             );
                           },
                         ),

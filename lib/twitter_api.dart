@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
 import 'package:shared_preferences/shared_preferences.dart';
 import './twitter_objects/tweet.dart';
+import './twitter_objects/user.dart';
+import './my_database.dart';
 
 class TwitterAPI {
   static final TwitterAPI _instance = TwitterAPI._internal();
@@ -23,7 +26,7 @@ class TwitterAPI {
     'nGTObtxzjKs0XawEvbxx96RgC',
     'I6z4NZ1BhgXK0oBwDVfpKmLiPJUMIFcnnQUD7PSQMaVfuDqEY0',
   );
-  late final oauth1.Client client;
+  var client;
 
   bool isInitialized = false;
 
@@ -36,7 +39,7 @@ class TwitterAPI {
     if(client == null) client = new oauth1.Client(
         _platform.signatureMethod, _clientCredentials,
         new oauth1.Credentials(await _loadToken(prefs), await _loadTokenSecret(prefs)));
-    myTwitterAccount = _request('users/show.json') as User;
+    myTwitterAccount = User(await _request('account/verify_credentials.json'));
   }
   Future<String> _loadToken(prefs) async {
     print('Access Token: ${prefs.getString('twitter_token')}');
@@ -68,13 +71,13 @@ class TwitterAPI {
 
   List<String> likes = [];
   void like(Tweet tweet) async {
-    _request('favorites/create.json?id=' + tweet.id_str, 'POST');
+    await _request('favorites/create.json?id=' + tweet.id_str, 'POST');
     likes.add(tweet.id_str);
   }
 
   List<String> retweets = [];
   void retweet(Tweet tweet) async {
-    _request('users/'+ myTwitterAccount.id_str +'/retweets', 'POST', '{"tweet_id": ' + tweet.id_str + '}', '2');
+    await _request('users/'+ myTwitterAccount.id_str +'/retweets', 'POST', '{"tweet_id": ' + tweet.id_str + '}', '2');
     retweets.add(tweet.id_str);
   }
 
@@ -117,5 +120,9 @@ class TwitterAPI {
       tweetObjects.add(new Tweet(data))
     });
     return tweetObjects;
+  }
+
+  Future<Tweet> updateTweet(Tweet tweet) async {
+    return Tweet(await _request("statuses/show.json?id=${tweet.id_str}") as Map);
   }
 }

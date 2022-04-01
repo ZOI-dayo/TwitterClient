@@ -80,12 +80,6 @@ class HomeModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Color> likeColor(int index) async {
-    return await TwitterAPI().isLiked(_tweets.elementAt(index).id.toString())
-        ? Colors.red
-        : Colors.white;
-  }
-
   GlobalKey issueTweetKey(int id) {
     GlobalKey key = GlobalKey();
     tweetKeyList[id] = key;

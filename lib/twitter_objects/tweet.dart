@@ -28,8 +28,8 @@ class Tweet {
   // bool is_quote_status;
   // Tweet? quoted_status;// nullableではない、存在しない場合がある?
   late final Tweet? retweeted_status; // nullableではない、存在しない場合がある?
-  // int retweet_count;
-  // int? favorite_count;
+  late final int retweet_count;
+  late final int favorite_count;
   // Entities entities;
   late final ExpandedEntities? extended_entities;
 
@@ -57,6 +57,8 @@ class Tweet {
     retweeted_status = tweetObject.containsKey("retweeted_status")
         ? new Tweet(tweetObject["retweeted_status"])
         : null;
+    retweet_count = tweetObject["retweet_count"];
+    favorite_count = tweetObject["favorite_count"];
     extended_entities = tweetObject.containsKey("extended_entities")
         ? new ExpandedEntities(tweetObject["extended_entities"])
         : null;
