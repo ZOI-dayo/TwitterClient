@@ -31,18 +31,23 @@ class _SearchPage extends StatelessWidget {
                   context.read<HomeModel>().refresh();
                 },
                 child: FutureBuilder(
-                  future: context.read<HomeModel>().getTimeline(),
-                    builder: (BuildContext context, AsyncSnapshot<List<Tweet>> snapshot) {
-                    return SingleChildScrollView(
-                        key: context.read<HomeModel>().scrollWidgetKey,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: Column(
-                            children: snapshot.data
-                                ?.map((Tweet t) =>
-                                    TweetWidget(context.read<HomeModel>(), t) as Widget)
-                                .toList() ?? [Text('no items')]));
-                  }
-                )),
+                    future: context.read<HomeModel>().getTimeline(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<Tweet>> snapshot) {
+                      return SingleChildScrollView(
+                          key: context.read<HomeModel>().scrollWidgetKey,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                              children: snapshot.data
+                                      ?.map((Tweet t) =>
+                                          ChangeNotifierProvider<TweetModel>(
+                                              create: (context) =>
+                                                  TweetModel(t),
+                                              child: TweetWidget(
+                                                  context.read<HomeModel>())))
+                                      .toList() ??
+                                  [Text('no items')]));
+                    })),
           ),
         ],
       ),
