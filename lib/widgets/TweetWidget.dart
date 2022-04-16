@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_extend/share_extend.dart';
 
 import '../pages/home_model.dart';
 import '../twitter_objects/tweet.dart';
@@ -119,7 +120,9 @@ class TweetWidget extends StatelessWidget {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.read<TweetModel>().share();
+                          },
                           child: Consumer<HomeModel>(
                             builder: (_, __, ___) {
                               return Row(
@@ -273,6 +276,10 @@ class TweetModel extends ChangeNotifier {
   void retweet() {
     TwitterAPI().retweet(tweet);
     notifyListeners();
+  }
+
+  void share() {
+    ShareExtend.share(tweet.text, "text");
   }
 
   Color getLikeColor() {
