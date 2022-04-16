@@ -27,6 +27,7 @@ dependencies:
   url_launcher: ^6.0.12
   shared_preferences: ^2.0.8
   fixnum: ^1.0.0
+  image_gallery_saver: ^1.7.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -35,6 +36,7 @@ dependencies:
   provider: ^6.0.1
   sqflite: ^2.0.1
   intl: ^0.17.0
+  flutter_exif_plugin: ^1.1.0
 
 dev_dependencies:
   flutter_test:

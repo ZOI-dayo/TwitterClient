@@ -1,5 +1,12 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:flutter_exif_plugin/flutter_exif_plugin.dart';
 
 class TweetImage extends Container {
   TweetImage(BuildContext context, List<String> imageUrls)
@@ -17,7 +24,7 @@ class TweetImage extends Container {
             onTap: () {
               onClickImage(context, url);
             },
-            child: Image.network(url, fit: BoxFit.contain)))
+            child: Image.network(url + "?name=thumb", fit: BoxFit.contain)))
         .toList();
     switch (clickableImages.length) {
       case 1:
@@ -100,7 +107,8 @@ class _ImageDialog extends ModalRoute<void> {
                 ],
                 onSelected: (result) {
                   if (result == _ImageOption.SAVE) {
-                    print("saved");
+                    print("saving...");
+                    _saveImage(url).then((_) => print("saved"));
                   }
                 },
               ),
@@ -109,6 +117,25 @@ class _ImageDialog extends ModalRoute<void> {
         ),
       ),
     );
+  }
+
+  Future<bool> _saveImage(String url) async {
+    final httpRequest = await http.get(Uri.parse(url + "?name=orig"));
+    final httpResponse = httpRequest.bodyBytes;
+    Uint8List? imgData;
+    if(Platform.isAndroid){
+      final exif = FlutterExif.fromBytes(httpResponse);
+      exif.setAttribute("ImageDescription", "test01");
+      exif.saveAttributes();
+      imgData = await exif.imageData;
+    }else {
+      imgData = httpResponse;
+    }
+    if(imgData == null) return Future.value(false);
+    final saveResult = await ImageGallerySaver.saveImage(imgData, quality: 100);
+    if(!saveResult["isSuccess"]) return Future.value(false);
+    final String imgPath = saveResult["filePath"];
+    return Future.value(true);
   }
 
   @override
