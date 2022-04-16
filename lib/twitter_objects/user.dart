@@ -1,7 +1,5 @@
 // https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/user
 
-import 'dart:ffi';
-
 import 'package:fixnum/fixnum.dart';
 
 class User {
@@ -26,8 +24,28 @@ class User {
   late final bool default_profile_image;
   late final List<String> withheld_in_countries;
   late final String withheld_scope;
+
   User(Map userObject) {
+    // id = userObject["id"];
+    // id_str = userObject["id_str"];
     name = userObject["name"];
+    screen_name = userObject["screen_name"];
+    // location = userObject["location"];
+    // url = userObject["url"];
+    // description = userObject["description"];
+    // protected = userObject["protected"];
+    // verified = userObject["verified"];
+    // followers_count = userObject["followers_count"];
+    // friends_count = userObject["friends_count"];
+    // listed_count = userObject["listed_count"];
+    // favourites_count = userObject["favourites_count"];
+    // statuses_count = userObject["statuses_count"];
+    // created_at = userObject["created_at"];
+    // profile_banner_url = userObject["profile_banner_url"];
     profile_image_url_https = userObject["profile_image_url_https"];
+    // default_profile = userObject["default_profile"];
+    // default_profile_image = userObject["default_profile_image"];
+    // withheld_in_countries = userObject["withheld_in_countries"];
+    // withheld_scope = userObject["withheld_scope"];
   }
 }

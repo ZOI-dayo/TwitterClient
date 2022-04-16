@@ -111,7 +111,7 @@ class Tweet {
       // imageView,
       if (rootTweet == retweeted_status) Text("RT"),
       Text(rootTweet.text),
-      if (imageUrls.isNotEmpty) TweetImage(context, imageUrls),
+      if (imageUrls.isNotEmpty) TweetImage(context, this, imageUrls),
     ]);
     return tweetContent;
   }
