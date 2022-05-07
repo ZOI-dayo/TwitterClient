@@ -19,7 +19,21 @@ class TweetWidget extends StatelessWidget {
         pageBuilder: (_, animation, secondaryAnimation) {
           return ChangeNotifierProvider<TweetModel>(
             create: (_) => context.read<TweetModel>(),
-            child: _TweetPage(context),
+            child: Material(
+              type: MaterialType.canvas,
+              child: SafeArea(
+                child: GestureDetector(
+                  onHorizontalDragUpdate: (details) {
+                    if (details.delta.dx > 10) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: SingleChildScrollView(
+                    child: _getTweetWidget(context),
+                  ),
+                ),
+              ),
+            ),
           );
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -49,218 +63,105 @@ class TweetWidget extends StatelessWidget {
           border: Border.all(color: Colors.red),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Row(
-          children: [
-            Image.network(
-                context.watch<TweetModel>().tweet.user.profile_image_url_https),
-            Flexible(
-              child: Column(
-                children: [
-                  Text(context.watch<TweetModel>().tweet.user.name,
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  context.watch<TweetModel>().tweet.getTweetContent(context),
-                  SizedBox(
-                    child: Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Consumer<HomeModel>(
-                            builder: (_, __, ___) {
-                              return Row(
-                                children: [
-                                  Icon(Icons.comment, color: Colors.white),
-                                ],
-                              );
-                            },
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.transparent,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            context.read<TweetModel>().like();
-                          },
-                          child: Row(
-                            children: [
-                              Icon(Icons.favorite,
-                                  color: context
-                                      .watch<TweetModel>()
-                                      .getLikeColor()),
-                              Text(context
-                                  .watch<TweetModel>()
-                                  .tweet
-                                  .favorite_count
-                                  .toString()),
-                            ],
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.transparent,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            context.read<TweetModel>().retweet();
-                          },
-                          child: Row(
-                            children: [
-                              Icon(Icons.loop,
-                                  color: context
-                                      .watch<TweetModel>()
-                                      .getRetweetColor()),
-                              Text(context
-                                  .watch<TweetModel>()
-                                  .tweet
-                                  .retweet_count
-                                  .toString()),
-                            ],
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.transparent,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            context.read<TweetModel>().share();
-                          },
-                          child: Consumer<HomeModel>(
-                            builder: (_, __, ___) {
-                              return Row(
-                                children: [Icon(Icons.share)],
-                              );
-                            },
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.transparent,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: _getTweetWidget(context),
       ),
     );
   }
-}
 
-class _TweetPage extends Material {
-  _TweetPage(BuildContext context)
-      : super(
-          type: MaterialType.canvas,
-          child: SafeArea(
-            child: GestureDetector(
-              onHorizontalDragUpdate: (details) {
-                if (details.delta.dx > 10) {
-                  Navigator.pop(context);
-                }
-              },
-              child: SingleChildScrollView(
+  Widget _getTweetWidget(BuildContext context) {
+    return Row(
+      children: [
+        Image.network(
+            context.watch<TweetModel>().tweet.user.profile_image_url_https),
+        Flexible(
+          child: Column(
+            children: [
+              Text(context.watch<TweetModel>().tweet.user.name,
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              context.watch<TweetModel>().tweet.getTweetContent(context),
+              SizedBox(
                 child: Row(
                   children: [
-                    Image.network(context
-                        .watch<TweetModel>()
-                        .tweet
-                        .user
-                        .profile_image_url_https),
-                    Flexible(
-                      child: Column(
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Consumer<HomeModel>(
+                        builder: (_, __, ___) {
+                          return Row(
+                            children: [
+                              Icon(Icons.comment, color: Colors.white),
+                            ],
+                          );
+                        },
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.transparent,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<TweetModel>().like();
+                      },
+                      child: Row(
                         children: [
-                          Text(context.watch<TweetModel>().tweet.user.name,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          context
+                          Icon(Icons.favorite,
+                              color:
+                                  context.watch<TweetModel>().getLikeColor()),
+                          Text(context
                               .watch<TweetModel>()
                               .tweet
-                              .getTweetContent(context),
-                          SizedBox(
-                            child: Row(
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  child: Consumer<HomeModel>(
-                                    builder: (_, __, ___) {
-                                      return Row(
-                                        children: [
-                                          Icon(Icons.comment,
-                                              color: Colors.white),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.transparent,
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    context.watch<TweetModel>().like();
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.favorite,
-                                          color: context
-                                              .watch<TweetModel>()
-                                              .getLikeColor()),
-                                      Text(context
-                                          .watch<TweetModel>()
-                                          .tweet
-                                          .favorite_count
-                                          .toString()),
-                                    ],
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.transparent,
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    context.watch<TweetModel>().retweet();
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.loop,
-                                          color: context
-                                              .watch<TweetModel>()
-                                              .getRetweetColor()),
-                                      Text(context
-                                          .watch<TweetModel>()
-                                          .tweet
-                                          .retweet_count
-                                          .toString()),
-                                    ],
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.transparent,
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  child: Consumer<HomeModel>(
-                                    builder: (_, __, ___) {
-                                      return Row(
-                                        children: [Icon(Icons.share)],
-                                      );
-                                    },
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.transparent,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                              .favorite_count
+                              .toString()),
                         ],
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.transparent,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<TweetModel>().retweet();
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.loop,
+                              color: context
+                                  .watch<TweetModel>()
+                                  .getRetweetColor()),
+                          Text(context
+                              .watch<TweetModel>()
+                              .tweet
+                              .retweet_count
+                              .toString()),
+                        ],
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.transparent,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<TweetModel>().share();
+                      },
+                      child: Consumer<HomeModel>(
+                        builder: (_, __, ___) {
+                          return Row(
+                            children: [Icon(Icons.share)],
+                          );
+                        },
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.transparent,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
-        );
+        ),
+      ],
+    );
+  }
 }
 
 class TweetModel extends ChangeNotifier {
