@@ -10,6 +10,7 @@ import '../widgets/TweetWidget.dart';
 class TimelinePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    context.read<HomeModel>().setShowTweet(true);
     return ChangeNotifierProvider(
       create: (context) => TimelineModel(context),
       child: MaterialApp(

@@ -19,6 +19,8 @@ class HomeModel extends ChangeNotifier {
   GlobalKey scrollWidgetKey = GlobalKey();
   Map<int, GlobalKey> tweetKeyList = Map();
   TwitterAPI _twitterAPI = TwitterAPI();
+  bool _showTweet = false;
+  bool get showTweet => _showTweet;
 
   HomeModel(MainModel model){
     mainModel = model;
@@ -32,6 +34,11 @@ class HomeModel extends ChangeNotifier {
       return 0;
     }
     return _tweets.length;
+  }
+
+  void setShowTweet(bool b){
+    _showTweet = b;
+    notifyListeners();
   }
 
   Future<List<Tweet>> getTimeline() async {
