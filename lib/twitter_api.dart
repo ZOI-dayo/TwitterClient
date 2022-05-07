@@ -40,6 +40,9 @@ class TwitterAPI {
         _platform.signatureMethod, _clientCredentials,
         new oauth1.Credentials(await _loadToken(prefs), await _loadTokenSecret(prefs)));
     myTwitterAccount = User(await _request('account/verify_credentials.json'));
+
+    print('_loadToken ${await _loadToken(prefs)}');
+    print('_loadTokenSecret ${await _loadTokenSecret(prefs)}');
   }
   Future<String> _loadToken(prefs) async {
     print('Access Token: ${prefs.getString('twitter_token')}');
@@ -124,5 +127,13 @@ class TwitterAPI {
 
   Future<Tweet> updateTweet(Tweet tweet) async {
     return Tweet(await _request("statuses/show.json?id=${tweet.id_str}") as Map);
+  }
+
+  Future<void> tweet(String text) async {
+    var body = {
+      'text': text
+    };
+
+    await _request('tweets', 'POST', jsonEncode(body), '2').then((value) => print('ツイートしました $value'));
   }
 }
