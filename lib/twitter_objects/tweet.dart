@@ -119,4 +119,8 @@ class Tweet {
   String getJson() {
     return JsonEncoder.withIndent("  ").convert(tweetObject);
   }
+
+  bool isRetweeted() {
+    return (retweeted_status?.id ?? id) != id;
+  }
 }
