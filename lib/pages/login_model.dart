@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:oauth1/oauth1.dart';
 import 'package:provider/provider.dart';
 import 'package:twitter_test/pages/main_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
 
+import '../state/local.dart';
+
+GetIt getIt = GetIt.instance;
 class LoginModel extends ChangeNotifier {
 
   static oauth1.Credentials? tokenCredentials;
@@ -17,12 +21,12 @@ class LoginModel extends ChangeNotifier {
     // late final auth = Provider.of<MainModel>(context, listen: false).auth;
     MainModel main = Provider.of<MainModel>(context, listen: false);
 
-    main.auth.requestTemporaryCredentials('oob').then((res) {
+    getIt<LocalState>().auth.requestTemporaryCredentials('oob').then((res) {
       tokenCredentials = res.credentials;
       print("oob");
       print(tokenCredentials);
       // launch() で ログイン用URLを開く
-      launch(main.auth.getResourceOwnerAuthorizationURI(tokenCredentials!.token));
+      launch(getIt<LocalState>().auth.getResourceOwnerAuthorizationURI(tokenCredentials!.token));
     });
 
     notifyListeners();
@@ -42,7 +46,7 @@ class LoginModel extends ChangeNotifier {
     MainModel main = Provider.of<MainModel>(context, listen: false);
     print(tokenCredentials);
     print(pin);
-    final res = await main.auth.requestTokenCredentials(
+    final res = await getIt<LocalState>().auth.requestTokenCredentials(
       tokenCredentials ?? new Credentials("", ""),
       pin
     );
@@ -57,8 +61,8 @@ class LoginModel extends ChangeNotifier {
 
   void _saveToken(MainModel mainModel, Credentials credentials) async {
     print("aaa");
-    mainModel.setStringPref("twitter_token", credentials.token);
-    mainModel.setStringPref("twitter_token_secret", credentials.tokenSecret);
+    getIt<LocalState>().setStringPref("twitter_token", credentials.token);
+    getIt<LocalState>().setStringPref("twitter_token_secret", credentials.tokenSecret);
     mainModel.notifyListeners();
   }
 }

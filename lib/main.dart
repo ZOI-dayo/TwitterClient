@@ -3,41 +3,20 @@ import 'package:provider/provider.dart';
 import 'package:twitter_test/pages/main_model.dart';
 import 'package:twitter_test/pages/main_page.dart';
 import 'package:twitter_test/pages/timeline_model.dart';
+import 'package:get_it/get_it.dart';
 
 import 'pages/login_model.dart';
+import 'state/local.dart';
+import 'state/timeline.dart';
+GetIt getIt = GetIt.instance;
 
 void main() {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  getIt.registerSingleton(LocalState(), signalsReady: true);
+  getIt.registerSingleton(TimelineState());//, signalsReady: true);
+
   runApp(MyApp());
-  // MultiProvider(
-  //   providers: [
-  //     ChangeNotifierProvider(create: (context) => new MainModel()),
-  //     // ChangeNotifierProvider(create: (context) => TimelineModel()),
-  //     // ChangeNotifierProvider(create: (context) => LoginModel()),
-  //   ],
-  //   child: MaterialApp(
-  //       title: 'Flutter Demo',
-  //       theme: ThemeData(
-  //         primarySwatch: Colors.blue,
-  //       ),
-  //       home: MainPage()
-  //   ),
-  // ),
-  //   Navigator.push(
-  //       context, MaterialPageRoute(
-  //       builder: (context) => ChangeNotifierProvider.value(
-  //           value: new MainModel(),
-  //           child: MainPage()
-  //       )
-  //   ));
-  // ChangeNotifierProvider(value: (context) => new MainModel()),
-  //       child: MaterialApp(
-  //           title: 'Flutter Demo',
-  //           theme: ThemeData(
-  //             primarySwatch: Colors.blue,
-  //           ),
-  //           home: MainPage()
-  //       ),
-  //     )),
 }
 
 class MyApp extends StatelessWidget {

@@ -5,6 +5,8 @@ import 'package:provider/src/provider.dart';
 import 'package:twitter_test/pages/message_page.dart';
 import 'package:twitter_test/pages/notification_page.dart';
 
+import '../state/local.dart';
+import '../state/timeline.dart';
 import '../twitter_api.dart';
 import 'home_model.dart';
 import 'main_model.dart';
@@ -60,7 +62,7 @@ class _HomePage extends StatelessWidget {
         currentIndex: context.watch<HomeModel>().selectedTab,
       ),
       body: getCurrentTab(context),
-      floatingActionButton: context.watch<HomeModel>().showTweet
+      floatingActionButton: getIt<TimelineState>().showTweet
           ? FloatingActionButton(
               child: Icon(Icons.add),
               onPressed: () {

@@ -1,16 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 import '../pages/home_model.dart';
+import '../state/timeline.dart';
 import '../twitter_objects/tweet.dart';
 import '../twitter_api.dart';
 
+GetIt getIt = GetIt.instance;
 class TweetWidget extends StatelessWidget {
-  HomeModel model;
   Tweet tweet;
 
-  TweetWidget(this.model, this.tweet) : super();
+  TweetWidget(this.tweet) : super();
 
   static Color getLikeColor(Tweet tweet) {
     return tweet.favorited || TwitterAPI().likes.contains(tweet.id_str) ? Colors.red : Colors.white;
@@ -23,7 +25,7 @@ class TweetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      key: model.issueTweetKey(tweet.id),
+      key: getIt<TimelineState>().issueTweetKey(tweet.id),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.red),
         borderRadius: BorderRadius.circular(10),
@@ -61,7 +63,7 @@ class TweetWidget extends StatelessWidget {
                           TwitterAPI()
                               .updateTweet(tweet)
                               .then((newTweet) => this.tweet = newTweet);
-                          model.notifyListeners();
+                          context.read<HomeModel>().notifyListeners();
                         },
                         child: Row(
                           children: [
@@ -79,7 +81,7 @@ class TweetWidget extends StatelessWidget {
                           TwitterAPI()
                               .updateTweet(tweet)
                               .then((newTweet) => this.tweet = newTweet);
-                          model.notifyListeners();
+                          context.read<HomeModel>().notifyListeners();
                         },
                         child: Row(
                           children: [
