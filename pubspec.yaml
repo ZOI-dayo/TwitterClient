@@ -36,6 +36,10 @@ dependencies:
   provider: ^6.0.1
   sqflite: ^2.0.1
   intl: ^0.17.0
+  flutter_exif_plugin: ^1.1.0
+  share_extend: ^2.0.0
+  path_provider: ^2.0.9
+  gallery_saver: ^2.3.2
 
 dev_dependencies:
   flutter_test:

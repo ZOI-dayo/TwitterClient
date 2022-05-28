@@ -111,12 +111,16 @@ class Tweet {
       // imageView,
       if (rootTweet == retweeted_status) Text("RT"),
       Text(rootTweet.text),
-      if (imageUrls.isNotEmpty) TweetImage(context, imageUrls),
+      if (imageUrls.isNotEmpty) TweetImage(context, this, imageUrls),
     ]);
     return tweetContent;
   }
 
   String getJson() {
     return JsonEncoder.withIndent("  ").convert(tweetObject);
+  }
+
+  bool isRetweeted() {
+    return (retweeted_status?.id ?? id) != id;
   }
 }
