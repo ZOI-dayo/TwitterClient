@@ -1,6 +1,7 @@
 // https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet
 
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import '../widgets/TweetImage.dart';
@@ -30,11 +31,13 @@ class Tweet {
   late final Tweet? retweeted_status; // nullableではない、存在しない場合がある?
   late final int retweet_count;
   late final int favorite_count;
+
   // Entities entities;
   late final ExpandedEntities? extended_entities;
 
   late final bool favorited;
   late final bool retweeted;
+
   // bool? possibly_sensitive;
   // String filter_level;
   // String? lang; // BCP 47  Lang型?で保存?
@@ -86,7 +89,7 @@ class Tweet {
     return toStringWithIndent(0, 2);
   }
 
-  Widget getTweetContent(BuildContext context) {
+  Widget getTweetContent(BuildContext context, {bool retweeted = false}) {
     // final List<String> images = [];
     // RegExp(r'https:\/\/t.co\/\S+').allMatches(text).forEach((match) {
     //   images.add(match.group(0).toString() ?? "");
@@ -98,19 +101,42 @@ class Tweet {
     //   children: images.map((e) => Image.network(e)).toList(),
     // );
 
-    Tweet rootTweet = retweeted_status ?? this;
+    List<TextSpan> compiledText = [];
+    var urlPattern = RegExp(r'https:\/\/\S+');
+    var compilingText = text;
+    extended_entities?.media.forEach((media) => compilingText = compilingText.replaceAll(media.url, ""));
+    var defaultStyle = TextStyle(color: Colors.black, fontSize: 18);
+    // url切り出し
+    while (urlPattern.hasMatch(compilingText)) {
+      var matched = urlPattern.firstMatch(compilingText);
+      if (matched == null) break;
+      compiledText.add(TextSpan(
+          text: compilingText.substring(0, matched.start),
+          style: defaultStyle));
+      compiledText.add(
+          TextSpan(text: compilingText.substring(matched.start, matched.end),
+              style: TextStyle(color: Colors.blue)));
+      compilingText = compilingText.substring(matched.end);
+    }
+    compiledText.add(TextSpan(text: compilingText, style: defaultStyle));
+    print("--");
+    print(compiledText);
+    print("--");
 
-    // final images = extended_entities?.media
-    //         .map((e) => Image.network(e.media_url_https, fit: BoxFit.contain))
-    //         .toList() ??
-    //     [];
     final imageUrls =
         extended_entities?.media.map((e) => e.media_url_https).toList() ?? [];
     final tweetContent = Column(children: [
       // imageRemovedText,
       // imageView,
-      if (rootTweet == retweeted_status) Text("RT"),
-      Text(rootTweet.text),
+      RichText(
+        text: TextSpan(
+          style: defaultStyle,
+          children: <TextSpan>[
+            if (retweeted) TextSpan(text: "RT"),
+          ] +
+              compiledText,
+        ),
+      ),
       if (imageUrls.isNotEmpty) TweetImage(context, this, imageUrls),
     ]);
     return tweetContent;

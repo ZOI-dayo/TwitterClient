@@ -95,7 +95,7 @@ class TweetWidget extends StatelessWidget {
               Text(tweet.user.name,
                   style: TextStyle(fontWeight: FontWeight.bold)),
               if (!tweet.isRetweeted())
-                tweet.getTweetContent(context)
+                tweet.getTweetContent(context, retweeted: true)
               else
                 GestureDetector(
                   onTap: () {
