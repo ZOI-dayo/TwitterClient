@@ -32,8 +32,8 @@ class Tweet {
   late final int retweet_count;
   late final int favorite_count;
 
-  // Entities entities;
-  late final ExpandedEntities? extended_entities;
+  late final Entities? entities;
+  late final Entities? extended_entities;
 
   late final bool favorited;
   late final bool retweeted;
@@ -62,8 +62,11 @@ class Tweet {
         : null;
     retweet_count = tweetObject["retweet_count"];
     favorite_count = tweetObject["favorite_count"];
+    entities = tweetObject.containsKey("entities")
+        ? new Entities(tweetObject["entities"])
+        : null;
     extended_entities = tweetObject.containsKey("extended_entities")
-        ? new ExpandedEntities(tweetObject["extended_entities"])
+        ? new Entities(tweetObject["extended_entities"])
         : null;
     favorited = tweetObject["favorited"];
     retweeted = tweetObject["retweeted"];
@@ -101,27 +104,62 @@ class Tweet {
     //   children: images.map((e) => Image.network(e)).toList(),
     // );
 
-    List<TextSpan> compiledText = [];
+    List<_StyleSpan> compiledText = [new _StyleSpan(text)];
+    // var compilingText = [text];
+
     var urlPattern = RegExp(r'https:\/\/\S+');
-    var compilingText = text;
-    extended_entities?.media.forEach((media) => compilingText = compilingText.replaceAll(media.url, ""));
-    var defaultStyle = TextStyle(color: Colors.black, fontSize: 18);
-    // url切り出し
-    while (urlPattern.hasMatch(compilingText)) {
-      var matched = urlPattern.firstMatch(compilingText);
-      if (matched == null) break;
-      compiledText.add(TextSpan(
-          text: compilingText.substring(0, matched.start),
-          style: defaultStyle));
-      compiledText.add(
-          TextSpan(text: compilingText.substring(matched.start, matched.end),
-              style: TextStyle(color: Colors.blue)));
-      compilingText = compilingText.substring(matched.end);
+    // var urlPattern = RegExp(r'RT');
+    List<_StyleSpan> urlCompiledText = [];
+    for (var compilingSpan in compiledText) {
+      if (compilingSpan.power >= 100) {
+        urlCompiledText .add(compilingSpan);
+      }
+      var compilingText = compilingSpan.text ?? "";
+      print(compilingText);
+      print(extended_entities);
+      entities?.media.forEach(
+              (media) => {compilingText = compilingText.replaceAll(media.url, ""), print("aaa + " + media.url)});
+      extended_entities?.media.forEach(
+          (media) => {compilingText = compilingText.replaceAll(media.url, ""), print("aaa + " + media.url)});
+      print(compilingText);
+      print("--");
+      // var defaultStyle = TextStyle(color: Colors.black, fontSize: 18);
+      // url切り出し
+      while (urlPattern.hasMatch(compilingText)) {
+        var matched = urlPattern.firstMatch(compilingText);
+        if (matched == null) break;
+        urlCompiledText.add(_StyleSpan(
+            compilingText.substring(0, matched.start)));
+        urlCompiledText.add(_StyleSpan(
+            compilingText.substring(matched.start, matched.end),
+            style: TextStyle(color: Colors.blue), power: 100));
+        compilingText = compilingText.substring(matched.end);
+      }
+      urlCompiledText.add(_StyleSpan(compilingText));
     }
-    compiledText.add(TextSpan(text: compilingText, style: defaultStyle));
-    print("--");
-    print(compiledText);
-    print("--");
+    compiledText = urlCompiledText;
+
+    var tagPattern = RegExp(r'#\S+');
+    List<_StyleSpan> tagCompiledText = [];
+    for (var compilingSpan in compiledText) {
+      if (compilingSpan.power >= 100) {
+        tagCompiledText.add(compilingSpan);
+      }
+      var compilingText = compilingSpan.text ?? "";
+      // url切り出し
+      while (tagPattern.hasMatch(compilingText)) {
+        var matched = tagPattern.firstMatch(compilingText);
+        if (matched == null) break;
+        tagCompiledText.add(_StyleSpan(
+            compilingText.substring(0, matched.start)));
+        tagCompiledText.add(_StyleSpan(
+            compilingText.substring(matched.start, matched.end),
+            style: TextStyle(color: Colors.blue), power: 100));
+        compilingText = compilingText.substring(matched.end);
+      }
+      tagCompiledText.add(_StyleSpan(compilingText));
+    }
+    compiledText = tagCompiledText;
 
     final imageUrls =
         extended_entities?.media.map((e) => e.media_url_https).toList() ?? [];
@@ -130,10 +168,9 @@ class Tweet {
       // imageView,
       RichText(
         text: TextSpan(
-          style: defaultStyle,
           children: <TextSpan>[
-            if (retweeted) TextSpan(text: "RT"),
-          ] +
+                if (retweeted) TextSpan(text: "RT"),
+              ] +
               compiledText,
         ),
       ),
@@ -149,4 +186,12 @@ class Tweet {
   bool isRetweeted() {
     return (retweeted_status?.id ?? id) != id;
   }
+}
+
+class _StyleSpan extends TextSpan {
+  late final power;
+  static const defaultStyle = TextStyle(color: Colors.black, fontSize: 18);
+
+  _StyleSpan(String text, {TextStyle style = defaultStyle, this.power = 0})
+      : super(text: text, style: style);
 }
