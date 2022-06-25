@@ -1,9 +1,11 @@
 // https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet
 
 import 'dart:convert';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../widgets/TweetImage.dart';
 
 import 'entities.dart';
@@ -93,7 +95,8 @@ class Tweet {
   }
 
   List<_StyleSpan> _ConvertText(
-      RegExp pattern, List<_StyleSpan> source, int power, {Function<_StyleSpan>? callback}) {
+      RegExp pattern, List<_StyleSpan> source, int power,
+      {Function? onTap}) {
     List<_StyleSpan> tagCompiledText = [];
     for (var compilingSpan in source) {
       if (compilingSpan.power >= power) {
@@ -109,7 +112,8 @@ class Tweet {
         tagCompiledText.add(_StyleSpan(
             compilingText.substring(matched.start, matched.end),
             style: _StyleSpan.defaultStyle.apply(color: Colors.blue),
-            power: power));
+            power: power,
+            onTap: onTap));
         compilingText = compilingText.substring(matched.end);
       }
       tagCompiledText.add(_StyleSpan(compilingText));
@@ -134,7 +138,14 @@ class Tweet {
 
     List<_StyleSpan> compiledText = [new _StyleSpan(visibleText)];
     // URL
-    compiledText = _ConvertText(RegExp(r'https:\/\/\S+'), compiledText, 100, callback: () => {print("")});
+    compiledText = _ConvertText(RegExp(r'https:\/\/\S+'), compiledText, 100,
+        onTap: (String text) async {
+      try {
+        await launch(text);
+      } catch (e) {
+        print(e);
+      }
+    });
     // HashTag
     compiledText = _ConvertText(RegExp(r'#\S+'), compiledText, 100);
 
@@ -169,6 +180,11 @@ class _StyleSpan extends TextSpan {
   late final power;
   static const defaultStyle = TextStyle(color: Colors.black, fontSize: 18);
 
-  _StyleSpan(String text, {TextStyle style = defaultStyle, this.power = 0})
-      : super(text: text, style: style);
+  _StyleSpan(String text,
+      {TextStyle style = defaultStyle, this.power = 0, Function? onTap})
+      : super(
+            text: text,
+            style: style,
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => onTap?.call(text));
 }
