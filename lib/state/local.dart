@@ -2,9 +2,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
+import 'package:twitter_test/state/timeline.dart';
 
 class LocalState extends ChangeNotifier {
-  SharedPreferences? prefs;
+  SharedPreferences? _prefs;
 // oauth
   final platform = oauth1.Platform(
     'https://api.twitter.com/oauth/request_token',
@@ -21,34 +22,40 @@ class LocalState extends ChangeNotifier {
   late final client;
 
 
-  LocalState() {
-    _init();
-  }
-  _init() async {
-    prefs = await SharedPreferences.getInstance();
+  LocalState();
+
+  Future<SharedPreferences> _pref() async {
+    if(_prefs!=null) return Future.value(_prefs!);
+    _prefs = await SharedPreferences.getInstance();
+    return Future.value(_prefs!);
   }
 
   bool hasToken() {
-    return prefs?.containsKey('twitter_token') ?? false;
+    print('prefs=$_prefs');
+    String? token = getString("twitter_token");
+    print('token=$token');
+    return token!=null&&token.length>0;
   }
 
   Future<String> loadToken() async {
-    print('Access Token: ${prefs?.getString('twitter_token')}');
-    return prefs?.getString('twitter_token') ?? "";
+    return _pref().then((value) => Future.value(value.getString('twitter_token')??''));
   }
 
   Future<String> loadTokenSecret() async {
-    print('Access Token Secret: ${prefs?.getString('twitter_token_secret')}');
-    return prefs?.getString('twitter_token_secret') ?? "";
+    return _pref().then((value) =>Future.value(value.getString('twitter_token_secret')??''));
   }
 
   Future<String> getStringPref(String key) async {
-    return prefs?.getString(key) ?? "";
+    return _pref().then((value) =>Future.value(value.getString(key)??''));
   }
 
-  Future<bool> setStringPref(String key, String value, {bool notify=true}) {
-    Future<bool>? result = prefs?.setString(key, value);
+  String? getString(String key) {
+    return _prefs!=null?_prefs!.getString(key):null;
+  }
+
+  Future<bool> setStringPref(String key, String value, {bool notify=true}) async {
+    Future<bool> result = await _pref().then((p) => p.setString(key, value));
     if(notify) notifyListeners();
-    return result ?? Future.value(false);
+    return result;
   }
 }

@@ -4,20 +4,19 @@ import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:share_extend/share_extend.dart';
 
+import '../globals.dart';
 import '../pages/home_model.dart';
+import '../pages/timeline_model.dart';
 import '../state/timeline.dart';
 import '../twitter_objects/tweet.dart';
 import '../twitter_api.dart';
 
-GetIt getIt = GetIt.instance;
 class TweetWidget extends StatelessWidget {
   Tweet tweet;
 
   TweetWidget(this.tweet) : super();
 
-  TweetWidget(this.homeModel) : super();
-
-  void openTweet(BuildContext context, {Tweet? tweet}) {
+  /*void openTweet(BuildContext context, {Tweet? tweet}) {
     late TweetModel tweetModel;
     if (tweet == null) {
       tweet = context.read<TweetModel>().tweet;
@@ -66,23 +65,23 @@ class TweetWidget extends StatelessWidget {
         },
       ),
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        openTweet(context, tweet: context.read<TweetModel>().tweet);
+        //openTweet(context, tweet: context.read<TweetModel>().tweet);
       },
       child: Container(
-        key: homeModel.issueTweetKey(context.watch<TweetModel>().tweet.id),
+        key: getIt<TimelineState>().issueTweetKey(tweet.id),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.red),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [
-            _getTweetWidget(context, context.read<TweetModel>().tweet),
+            _getTweetWidget(context, tweet),
             _getButtonBar(context),
           ],
         ),
@@ -104,7 +103,7 @@ class TweetWidget extends StatelessWidget {
               else
                 GestureDetector(
                   onTap: () {
-                    openTweet(context, tweet: tweet.retweeted_status ?? tweet);
+                    //openTweet(context, tweet: tweet.retweeted_status ?? tweet);
                   },
                   child: Container(
                       color: Colors.transparent,
@@ -141,15 +140,13 @@ class TweetWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<TweetModel>().like();
+              context.watch<TimelineModel>().like(tweet);
             },
             child: Row(
               children: [
                 Icon(Icons.favorite,
-                    color: context.watch<TweetModel>().getLikeColor()),
-                Text(context
-                    .watch<TweetModel>()
-                    .tweet
+                    color: context.watch<TimelineModel>().getLikeColor(tweet)),
+                Text(tweet
                     .favorite_count
                     .toString()),
               ],
@@ -160,14 +157,14 @@ class TweetWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<TweetModel>().retweet();
+              context.watch<TimelineModel>().retweet(tweet);
             },
             child: Row(
               children: [
                 Icon(Icons.loop,
-                    color: context.watch<TweetModel>().getRetweetColor()),
+                    color: context.watch<TimelineModel>().getRetweetColor(tweet)),
                 Text(
-                    context.watch<TweetModel>().tweet.retweet_count.toString()),
+                    tweet.retweet_count.toString()),
               ],
             ),
             style: ElevatedButton.styleFrom(
@@ -176,7 +173,7 @@ class TweetWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<TweetModel>().share();
+              context.watch<TimelineModel>().share(tweet);
             },
             child: Consumer<HomeModel>(
               builder: (_, __, ___) {
@@ -195,34 +192,3 @@ class TweetWidget extends StatelessWidget {
   }
 }
 
-class TweetModel extends ChangeNotifier {
-  Tweet tweet;
-
-  TweetModel(this.tweet);
-
-  void like() {
-    TwitterAPI().like(tweet);
-    notifyListeners();
-  }
-
-  void retweet() {
-    TwitterAPI().retweet(tweet);
-    notifyListeners();
-  }
-
-  void share() {
-    ShareExtend.share(tweet.text, "text");
-  }
-
-  Color getLikeColor() {
-    return tweet.favorited || TwitterAPI().likes.contains(tweet.id_str)
-        ? Colors.red
-        : Colors.white;
-  }
-
-  Color getRetweetColor() {
-    return tweet.retweeted || TwitterAPI().retweets.contains(tweet.id_str)
-        ? Colors.red
-        : Colors.white;
-  }
-}

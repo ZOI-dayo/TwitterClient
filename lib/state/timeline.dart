@@ -64,7 +64,7 @@ class TimelineState extends ChangeNotifier {
     _tweets.insertAll(0, additionTweets);
 
     if (_tweets.length > 20) _tweets = _tweets.sublist(0, 20);
-    SchedulerBinding.instance?.addPostFrameCallback((_) => {
+    SchedulerBinding.instance.addPostFrameCallback((_) => {
       if (tweetKeyList.containsKey(latestId) && tweetKeyList[latestId]!.currentContext != null)
         {
           print("ensure"),

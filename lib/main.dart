@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:twitter_test/pages/main_model.dart';
 import 'package:twitter_test/pages/main_page.dart';
-import 'package:twitter_test/pages/timeline_model.dart';
 import 'package:get_it/get_it.dart';
 
-import 'pages/login_model.dart';
+import 'globals.dart';
 import 'state/local.dart';
 import 'state/timeline.dart';
-GetIt getIt = GetIt.instance;
 
 void main() {
 

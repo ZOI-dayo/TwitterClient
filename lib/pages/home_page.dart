@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/src/provider.dart';
 import 'package:twitter_test/pages/message_page.dart';
 import 'package:twitter_test/pages/notification_page.dart';
 
-import '../state/local.dart';
+import '../globals.dart';
 import '../state/timeline.dart';
 import '../twitter_api.dart';
 import 'home_model.dart';

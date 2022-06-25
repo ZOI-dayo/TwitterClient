@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/src/provider.dart';
 
-import '../state/local.dart';
+import '../globals.dart';
 import '../state/timeline.dart';
-import './home_model.dart';
 import './timeline_model.dart';
 import '../twitter_objects/tweet.dart';
 import '../widgets/TweetWidget.dart';
 
-GetIt getIt = GetIt.instance;
 class TimelinePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
