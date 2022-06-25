@@ -92,6 +92,31 @@ class Tweet {
     return toStringWithIndent(0, 2);
   }
 
+  List<_StyleSpan> _ConvertText(
+      RegExp pattern, List<_StyleSpan> source, int power, {Function<_StyleSpan>? callback}) {
+    List<_StyleSpan> tagCompiledText = [];
+    for (var compilingSpan in source) {
+      if (compilingSpan.power >= power) {
+        tagCompiledText.add(compilingSpan);
+      }
+      var compilingText = compilingSpan.text ?? "";
+      // url切り出し
+      while (pattern.hasMatch(compilingText)) {
+        var matched = pattern.firstMatch(compilingText);
+        if (matched == null) break;
+        tagCompiledText
+            .add(_StyleSpan(compilingText.substring(0, matched.start)));
+        tagCompiledText.add(_StyleSpan(
+            compilingText.substring(matched.start, matched.end),
+            style: _StyleSpan.defaultStyle.apply(color: Colors.blue),
+            power: power));
+        compilingText = compilingText.substring(matched.end);
+      }
+      tagCompiledText.add(_StyleSpan(compilingText));
+    }
+    return tagCompiledText;
+  }
+
   Widget getTweetContent(BuildContext context, {bool retweeted = false}) {
     // final List<String> images = [];
     // RegExp(r'https:\/\/t.co\/\S+').allMatches(text).forEach((match) {
@@ -103,63 +128,15 @@ class Tweet {
     // final imageView = Row(
     //   children: images.map((e) => Image.network(e)).toList(),
     // );
+    String visibleText = text;
+    ((entities?.media ?? []) + (extended_entities?.media ?? [])).forEach(
+        (media) => {visibleText = visibleText.replaceAll(media.url, "")});
 
-    List<_StyleSpan> compiledText = [new _StyleSpan(text)];
-    // var compilingText = [text];
-
-    var urlPattern = RegExp(r'https:\/\/\S+');
-    // var urlPattern = RegExp(r'RT');
-    List<_StyleSpan> urlCompiledText = [];
-    for (var compilingSpan in compiledText) {
-      if (compilingSpan.power >= 100) {
-        urlCompiledText .add(compilingSpan);
-      }
-      var compilingText = compilingSpan.text ?? "";
-      print(compilingText);
-      print(extended_entities);
-      entities?.media.forEach(
-              (media) => {compilingText = compilingText.replaceAll(media.url, ""), print("aaa + " + media.url)});
-      extended_entities?.media.forEach(
-          (media) => {compilingText = compilingText.replaceAll(media.url, ""), print("aaa + " + media.url)});
-      print(compilingText);
-      print("--");
-      // var defaultStyle = TextStyle(color: Colors.black, fontSize: 18);
-      // url切り出し
-      while (urlPattern.hasMatch(compilingText)) {
-        var matched = urlPattern.firstMatch(compilingText);
-        if (matched == null) break;
-        urlCompiledText.add(_StyleSpan(
-            compilingText.substring(0, matched.start)));
-        urlCompiledText.add(_StyleSpan(
-            compilingText.substring(matched.start, matched.end),
-            style: TextStyle(color: Colors.blue), power: 100));
-        compilingText = compilingText.substring(matched.end);
-      }
-      urlCompiledText.add(_StyleSpan(compilingText));
-    }
-    compiledText = urlCompiledText;
-
-    var tagPattern = RegExp(r'#\S+');
-    List<_StyleSpan> tagCompiledText = [];
-    for (var compilingSpan in compiledText) {
-      if (compilingSpan.power >= 100) {
-        tagCompiledText.add(compilingSpan);
-      }
-      var compilingText = compilingSpan.text ?? "";
-      // url切り出し
-      while (tagPattern.hasMatch(compilingText)) {
-        var matched = tagPattern.firstMatch(compilingText);
-        if (matched == null) break;
-        tagCompiledText.add(_StyleSpan(
-            compilingText.substring(0, matched.start)));
-        tagCompiledText.add(_StyleSpan(
-            compilingText.substring(matched.start, matched.end),
-            style: TextStyle(color: Colors.blue), power: 100));
-        compilingText = compilingText.substring(matched.end);
-      }
-      tagCompiledText.add(_StyleSpan(compilingText));
-    }
-    compiledText = tagCompiledText;
+    List<_StyleSpan> compiledText = [new _StyleSpan(visibleText)];
+    // URL
+    compiledText = _ConvertText(RegExp(r'https:\/\/\S+'), compiledText, 100, callback: () => {print("")});
+    // HashTag
+    compiledText = _ConvertText(RegExp(r'#\S+'), compiledText, 100);
 
     final imageUrls =
         extended_entities?.media.map((e) => e.media_url_https).toList() ?? [];
