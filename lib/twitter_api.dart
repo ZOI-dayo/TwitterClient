@@ -74,14 +74,14 @@ class TwitterAPI {
 
   List<String> likes = [];
   void like(Tweet tweet) async {
-    await _request('favorites/create.json?id=' + tweet.id_str, 'POST');
     likes.add(tweet.id_str);
+    await _request('favorites/create.json?id=' + tweet.id_str, 'POST');
   }
 
   List<String> retweets = [];
   void retweet(Tweet tweet) async {
-    await _request('users/'+ myTwitterAccount.id_str +'/retweets', 'POST', '{"tweet_id": ' + tweet.id_str + '}', '2');
     retweets.add(tweet.id_str);
+    await _request('users/'+ myTwitterAccount.id_str +'/retweets', 'POST', '{"tweet_id": ' + tweet.id_str + '}', '2');
   }
 
   Future<List<Tweet>> getTimeline(int latestId, int count, {DateTime? lastApiRequestTime, void callback(int latestId, int count, DateTime? lastApiRequestTime)?}) async {

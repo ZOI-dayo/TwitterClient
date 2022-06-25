@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:twitter_test/pages/home_page.dart';
-import 'package:twitter_test/pages/login_page.dart';
-import 'package:twitter_test/pages/timeline_page.dart';
 
+import '../globals.dart';
+import '../state/local.dart';
+import '../state/timeline.dart';
 import 'main_model.dart';
 
 class MainPage extends StatelessWidget {
@@ -24,7 +23,29 @@ class _TokenCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ログイン状態に応じて、画面を切り替える
-    final bool _hasToken = context.watch<MainModel>().hasToken();
-    return _hasToken? HomePage() : LoginPage();
+    debugPrint('=============-- incoming _TokenCheck');
+    return Scaffold(
+        body: getIt<LocalState>().hasToken()
+            ? HomePage()
+            : createLogin(context));
+  }
+
+  Widget createLogin(BuildContext context) {
+    debugPrint('=============-- incoming _LoginPage');
+    MainModel mainModel = context.watch<MainModel>();
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      TextFormField(
+        controller: mainModel.controller,
+      ),
+      // Text(context.read<MainModel>().controller.toString()),
+      ElevatedButton(
+        onPressed: () => mainModel.openLoginWindow(context),
+        child: Text('OpenLoginWindow'),
+      ),
+      ElevatedButton(
+        onPressed: () => mainModel.tryLogin(mainModel.controller.value.text),
+        child: Text('OK'),
+      )
+    ]);
   }
 }
