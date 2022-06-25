@@ -1,8 +1,11 @@
 // https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet
 
 import 'dart:convert';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../widgets/TweetImage.dart';
 
 import 'entities.dart';
@@ -30,11 +33,13 @@ class Tweet {
   late final Tweet? retweeted_status; // nullableではない、存在しない場合がある?
   late final int retweet_count;
   late final int favorite_count;
-  // Entities entities;
-  late final ExpandedEntities? extended_entities;
+
+  late final Entities? entities;
+  late final Entities? extended_entities;
 
   late final bool favorited;
   late final bool retweeted;
+
   // bool? possibly_sensitive;
   // String filter_level;
   // String? lang; // BCP 47  Lang型?で保存?
@@ -59,8 +64,11 @@ class Tweet {
         : null;
     retweet_count = tweetObject["retweet_count"];
     favorite_count = tweetObject["favorite_count"];
+    entities = tweetObject.containsKey("entities")
+        ? new Entities(tweetObject["entities"])
+        : null;
     extended_entities = tweetObject.containsKey("extended_entities")
-        ? new ExpandedEntities(tweetObject["extended_entities"])
+        ? new Entities(tweetObject["extended_entities"])
         : null;
     favorited = tweetObject["favorited"];
     retweeted = tweetObject["retweeted"];
@@ -86,7 +94,34 @@ class Tweet {
     return toStringWithIndent(0, 2);
   }
 
-  Widget getTweetContent(BuildContext context) {
+  List<_StyleSpan> _ConvertText(
+      RegExp pattern, List<_StyleSpan> source, int power,
+      {Function? onTap}) {
+    List<_StyleSpan> tagCompiledText = [];
+    for (var compilingSpan in source) {
+      if (compilingSpan.power >= power) {
+        tagCompiledText.add(compilingSpan);
+      }
+      var compilingText = compilingSpan.text ?? "";
+      // url切り出し
+      while (pattern.hasMatch(compilingText)) {
+        var matched = pattern.firstMatch(compilingText);
+        if (matched == null) break;
+        tagCompiledText
+            .add(_StyleSpan(compilingText.substring(0, matched.start)));
+        tagCompiledText.add(_StyleSpan(
+            compilingText.substring(matched.start, matched.end),
+            style: _StyleSpan.defaultStyle.apply(color: Colors.blue),
+            power: power,
+            onTap: onTap));
+        compilingText = compilingText.substring(matched.end);
+      }
+      tagCompiledText.add(_StyleSpan(compilingText));
+    }
+    return tagCompiledText;
+  }
+
+  Widget getTweetContent(BuildContext context, {bool retweeted = false}) {
     // final List<String> images = [];
     // RegExp(r'https:\/\/t.co\/\S+').allMatches(text).forEach((match) {
     //   images.add(match.group(0).toString() ?? "");
@@ -97,20 +132,36 @@ class Tweet {
     // final imageView = Row(
     //   children: images.map((e) => Image.network(e)).toList(),
     // );
+    String visibleText = text;
+    ((entities?.media ?? []) + (extended_entities?.media ?? [])).forEach(
+        (media) => {visibleText = visibleText.replaceAll(media.url, "")});
 
-    Tweet rootTweet = retweeted_status ?? this;
+    List<_StyleSpan> compiledText = [new _StyleSpan(visibleText)];
+    // URL
+    compiledText = _ConvertText(RegExp(r'https:\/\/\S+'), compiledText, 100,
+        onTap: (String text) async {
+      try {
+        await launch(text);
+      } catch (e) {
+        print(e);
+      }
+    });
+    // HashTag
+    compiledText = _ConvertText(RegExp(r'#\S+'), compiledText, 100);
 
-    // final images = extended_entities?.media
-    //         .map((e) => Image.network(e.media_url_https, fit: BoxFit.contain))
-    //         .toList() ??
-    //     [];
     final imageUrls =
         extended_entities?.media.map((e) => e.media_url_https).toList() ?? [];
     final tweetContent = Column(children: [
       // imageRemovedText,
       // imageView,
-      if (rootTweet == retweeted_status) Text("RT"),
-      Text(rootTweet.text),
+      RichText(
+        text: TextSpan(
+          children: <TextSpan>[
+                if (retweeted) TextSpan(text: "RT"),
+              ] +
+              compiledText,
+        ),
+      ),
       if (imageUrls.isNotEmpty) TweetImage(context, this, imageUrls),
     ]);
     return tweetContent;
@@ -123,4 +174,17 @@ class Tweet {
   bool isRetweeted() {
     return (retweeted_status?.id ?? id) != id;
   }
+}
+
+class _StyleSpan extends TextSpan {
+  late final power;
+  static const defaultStyle = TextStyle(color: Colors.black, fontSize: 18);
+
+  _StyleSpan(String text,
+      {TextStyle style = defaultStyle, this.power = 0, Function? onTap})
+      : super(
+            text: text,
+            style: style,
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => onTap?.call(text));
 }

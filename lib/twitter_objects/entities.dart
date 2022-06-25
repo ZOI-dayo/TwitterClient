@@ -1,6 +1,6 @@
 // https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/entities
 
-class ExpandedEntities {
+class Entities {
   final List<Hashtag> hashtags = [];
   final List<Media> media = [];
   final List<Url> urls = [];
@@ -8,7 +8,7 @@ class ExpandedEntities {
   final List<Symbol> symbols = [];
   final List<Poll> polls = [];
 
-  ExpandedEntities(Map<String, dynamic> srcObject) {
+  Entities(Map<String, dynamic> srcObject) {
     // TODO: null時処理中断
     if (srcObject.containsKey("hashtags")) {
       for(final tag in srcObject["hashtags"]){
@@ -44,11 +44,11 @@ class ExpandedEntities {
 }
 
 class Hashtag {
-  late final List<int> indices;
+  late final List<num> indices;
   late final String text;
 
   Hashtag(Map<String, dynamic> srcObject) {
-    indices = srcObject["indices"] as List<int>;
+    indices = srcObject["indices"].cast<int>();
     text = srcObject["text"] as String;
   }
 }
@@ -122,7 +122,7 @@ class Url {
   Url(Map<String, dynamic> srcObject) {
     display_url = srcObject["display_url"] as String;
     expanded_url = srcObject["expanded_url"] as String;
-    indices = srcObject["indices"] as List<int>;
+    indices = srcObject["indices"].cast<int>();
     url = srcObject["url"] as String;
   }
 }
@@ -137,7 +137,7 @@ class UserMention {
   UserMention(Map<String, dynamic> srcObject) {
     id = srcObject["id"] as int;
     id_str = srcObject["id_str"] as String;
-    indices = srcObject["indices"] as List<int>;
+    indices = srcObject["indices"].cast<int>();
     name = srcObject["name"] as String;
     screen_name = srcObject["screen_name"] as String;
   }
@@ -148,7 +148,7 @@ class Symbol {
   late final String text;
 
   Symbol(Map<String, dynamic> srcObject) {
-    indices = srcObject["indices"] as List<int>;
+    indices = srcObject["indices"].cast<int>();
     text = srcObject["text"] as String;
   }
 }
