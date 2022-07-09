@@ -1,15 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import 'package:share_extend/share_extend.dart';
 
 import '../globals.dart';
 import '../pages/home_model.dart';
 import '../pages/timeline_model.dart';
 import '../state/timeline.dart';
 import '../twitter_objects/tweet.dart';
-import '../twitter_api.dart';
 
 class TweetWidget extends StatelessWidget {
   Tweet tweet;
@@ -71,6 +68,7 @@ class TweetWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        open(context);
         //openTweet(context, tweet: context.read<TweetModel>().tweet);
       },
       child: Container(
@@ -103,6 +101,7 @@ class TweetWidget extends StatelessWidget {
               else
                 GestureDetector(
                   onTap: () {
+                    open(context);
                     //openTweet(context, tweet: tweet.retweeted_status ?? tweet);
                   },
                   child: Container(
@@ -115,6 +114,51 @@ class TweetWidget extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _getTweetPage(BuildContext context) {
+    return Material(
+      type: MaterialType.canvas,
+      child: SafeArea(
+        child: GestureDetector(
+          onHorizontalDragUpdate: (details) {
+            if (details.delta.dx > 10) {
+              Navigator.pop(context);
+            }
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _getTweetWidget(context, tweet),
+                _getButtonBar(context),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  open(BuildContext context) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (_, animation, secondaryAnimation) {
+          return _getTweetPage(context);
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final Offset begin = Offset(1.0, 0.0);
+          final Offset end = Offset.zero;
+          final Animatable<Offset> tween = Tween(begin: begin, end: end)
+              .chain(CurveTween(curve: Curves.easeInOut));
+          final Animation<Offset> offsetAnimation = animation.drive(tween);
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
+      ),
     );
   }
 
