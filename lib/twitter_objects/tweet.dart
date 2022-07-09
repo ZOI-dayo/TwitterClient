@@ -185,6 +185,5 @@ class _StyleSpan extends TextSpan {
       : super(
             text: text,
             style: style,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () => onTap?.call(text));
+            recognizer: onTap != null ? (TapGestureRecognizer()..onTap = () => onTap.call(text)) : null);
 }
