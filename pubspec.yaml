@@ -40,6 +40,7 @@ dependencies:
   share_extend: ^2.0.0
   path_provider: ^2.0.9
   gallery_saver: ^2.3.2
+  flutter_datetime_picker: ^1.5.1
 
 dev_dependencies:
   flutter_test:
