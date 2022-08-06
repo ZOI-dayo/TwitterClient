@@ -7,7 +7,16 @@ import '../twitter_api.dart';
 import '../twitter_objects/tweet.dart';
 
 class TimelineModel extends ChangeNotifier {
-  TimelineModel(BuildContext context){
+  static final TimelineModel _instance = TimelineModel._internal();
+  TimelineModel._internal();
+  factory TimelineModel() {
+    return _instance;
+  }
+
+  List<Tweet> tweets = [];
+
+  void rebuild() {
+    notifyListeners();
   }
 
   void like(Tweet tweet) {
