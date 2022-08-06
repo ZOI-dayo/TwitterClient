@@ -5,7 +5,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:twitter_test/state/timeline.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../globals.dart';
 import '../widgets/TweetImage.dart';
 
 import 'entities.dart';
@@ -45,6 +47,10 @@ class Tweet {
   // String? lang; // BCP 47  Lang型?で保存?
   // Array<Rule> matching_rules;
 
+
+
+  late final GlobalKey key;
+
   // Tweet(String tweetString) {
   Tweet(Map tweetObject) {
     this.tweetObject = tweetObject;
@@ -72,7 +78,9 @@ class Tweet {
         : null;
     favorited = tweetObject["favorited"];
     retweeted = tweetObject["retweeted"];
-  }
+
+      key = getIt<TimelineState>().issueTweetKey(id);
+    }
 
   String toStringWithIndent(int offset, int indent) {
     String offsetStr = new List.filled(offset, " ").join();

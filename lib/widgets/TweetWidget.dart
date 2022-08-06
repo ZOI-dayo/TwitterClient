@@ -2,67 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../globals.dart';
 import '../pages/home_model.dart';
 import '../pages/timeline_model.dart';
-import '../state/timeline.dart';
 import '../twitter_objects/tweet.dart';
 
 class TweetWidget extends StatelessWidget {
   Tweet tweet;
 
   TweetWidget(this.tweet) : super();
-
-  /*void openTweet(BuildContext context, {Tweet? tweet}) {
-    late TweetModel tweetModel;
-    if (tweet == null) {
-      tweet = context.read<TweetModel>().tweet;
-      tweetModel = context.read<TweetModel>();
-    } else {
-      tweetModel = TweetModel(tweet);
-    }
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (_, animation, secondaryAnimation) {
-          return ChangeNotifierProvider<TweetModel>(
-            create: (_) => tweetModel,
-            child: Material(
-              type: MaterialType.canvas,
-              child: SafeArea(
-                child: GestureDetector(
-                  onHorizontalDragUpdate: (details) {
-                    if (details.delta.dx > 10) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        _getTweetWidget(context, tweet!),
-                        _getButtonBar(context),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          final Offset begin = Offset(1.0, 0.0);
-          final Offset end = Offset.zero;
-          final Animatable<Offset> tween = Tween(begin: begin, end: end)
-              .chain(CurveTween(curve: Curves.easeInOut));
-          final Animation<Offset> offsetAnimation = animation.drive(tween);
-          return SlideTransition(
-            position: offsetAnimation,
-            child: child,
-          );
-        },
-      ),
-    );
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +19,7 @@ class TweetWidget extends StatelessWidget {
         //openTweet(context, tweet: context.read<TweetModel>().tweet);
       },
       child: Container(
-        key: getIt<TimelineState>().issueTweetKey(tweet.id),
+        key: tweet.key,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.red),
           borderRadius: BorderRadius.circular(10),
@@ -184,7 +131,7 @@ class TweetWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.watch<TimelineModel>().like(tweet);
+              context.read<TimelineModel>().like(tweet);
             },
             child: Row(
               children: [
@@ -201,7 +148,7 @@ class TweetWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.watch<TimelineModel>().retweet(tweet);
+              context.read<TimelineModel>().retweet(tweet);
             },
             child: Row(
               children: [
@@ -217,7 +164,7 @@ class TweetWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.watch<TimelineModel>().share(tweet);
+              context.read<TimelineModel>().share(tweet);
             },
             child: Consumer<HomeModel>(
               builder: (_, __, ___) {
