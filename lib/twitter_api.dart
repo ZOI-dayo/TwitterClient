@@ -145,6 +145,25 @@ class TwitterAPI {
   Future<void> reply(String target, String text) async {
     var body = {'status': text, 'in_reply_to_status_id': target};
     print(jsonEncode(body));
-    print(await _request('statuses/update.json?in_reply_to_status_id=$target&status=$text', 'POST', null, '1.1'));
+    print(await _request(
+        'statuses/update.json?in_reply_to_status_id=$target&status=$text',
+        'POST', null, '1.1'));
+  }
+
+  Future<List<Tweet>> searchTimeline(String? keyword) async {
+    print('*********************** searchTimeline');
+    var result = await _request('search/tweets.json?count=200' + (keyword == null ? "" : "&q=" + keyword), 'GET');
+    if(result is Map && result.containsKey("errors")){
+      print("ERROR : " + result.toString());
+      return [];
+    }
+    print(result);
+    List tweetData = result as List;
+    List<Tweet> tweetObjects = [];
+    tweetData.forEach((data) => {
+      tweetObjects.add(new Tweet(data))
+    });
+
+    return tweetObjects;
   }
 }

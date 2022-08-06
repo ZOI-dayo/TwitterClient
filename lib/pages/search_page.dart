@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../globals.dart';
+import '../state/timeline.dart';
+import '../twitter_objects/tweet.dart';
+import '../widgets/TweetWidget.dart';
 import '../widgets/outlined_button.dart';
 import '../widgets/outlined_text_field.dart';
 import '../widgets/search_input_field.dart';
@@ -22,6 +26,8 @@ class SearchPage extends StatelessWidget {
 }
 
 class _SearchPage extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -32,14 +38,34 @@ class _SearchPage extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: SearchInputField(onSearch:()=>{
-                
+              child: SearchInputField(onSearch:(text){
+                context.read<SearchModel>().searchTweet(text);
               }),
             ),
             ExpandButton(
               name: 'フィルタ',
               child: createFilterOption(context),
-            )],
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                  onRefresh: () async {
+                    //getIt<TimelineState>().refresh();
+                  },
+                  child: FutureBuilder(
+                      future: context.watch<SearchModel>().getTimeline(),
+                      builder: (BuildContext context, AsyncSnapshot<List<Tweet>> snapshot) {
+                        print('****************** FutureBuilder::build size=${snapshot.data?.length}');
+                        return SingleChildScrollView(
+                            key: context.watch<SearchModel>().scrollWidgetKey,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: Column(
+                                children: snapshot.data
+                                    ?.map((Tweet t) => TweetWidget(t))
+                                    .toList() ?? [Text('no items')]));
+                      }
+                  )),
+            )
+          ],
         ),
       ),
     );
@@ -54,7 +80,7 @@ class _SearchPage extends StatelessWidget {
           children: [
             Text('ユーザ:'),
             Flexible(
-              child: OutlinedTextField(),
+              child: OutlinedTextField(searchModel.searchUserControler),
             )
           ],
         ),
