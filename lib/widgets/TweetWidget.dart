@@ -109,7 +109,7 @@ class TweetWidget extends StatelessWidget {
     );
   }
 
-  // BuildContextでなくTweetを使ってできるようにする
+  // TODO BuildContextでなくTweetを使ってできるようにする
   Widget _getButtonBar(BuildContext context) {
     return SizedBox(
       child: Row(

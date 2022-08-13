@@ -10,7 +10,7 @@ import '../globals.dart';
 class TimelineWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (TimelineModel().tweets.length == 0) getIt<TimelineState>().refresh();
+    if (TimelineModel.tweets.length == 0) getIt<TimelineState>().refresh();
     return RefreshIndicator(
       onRefresh: () async {
         await getIt<TimelineState>().refresh();
@@ -18,7 +18,7 @@ class TimelineWidget extends StatelessWidget {
       child: SingleChildScrollView(
         controller: getIt<TimelineState>().controller,
         child: Column(
-          children: context.watch<TimelineModel>().tweets.map((e) {
+          children: context.watch<TimelineModel>().getTweets().map((e) {
             return TweetWidget(e);
           }).toList(),
         ),

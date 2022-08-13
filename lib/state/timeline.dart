@@ -35,10 +35,10 @@ class TimelineState {
   // 名前変える?
   Future<List<Tweet>> update() async {
     int latestId;
-    if (TimelineModel().tweets.isEmpty) {
+    if (TimelineModel.tweets.isEmpty) {
       latestId = 1;
     } else {
-      latestId = TimelineModel().tweets[0].id;
+      latestId = TimelineModel.tweets[0].id;
     }
     if (!_twitterAPI.isInitialized) {
       await _twitterAPI.init();
@@ -53,7 +53,7 @@ class TimelineState {
                   (lastTime ?? DateTime.now()).toIso8601String()),
               lastApiRequestTime = lastTime ?? DateTime.now()
             });
-    TimelineModel().tweets.insertAll(0, additionTweets);
+    TimelineModel.tweets.insertAll(0, additionTweets);
     TimelineModel().rebuild();
 
     double dx = 0;
@@ -70,7 +70,7 @@ class TimelineState {
       });
       controller.jumpTo(dx);
     });
-    return TimelineModel().tweets;
+    return TimelineModel.tweets;
   }
 
   Future<void> refresh() async {
