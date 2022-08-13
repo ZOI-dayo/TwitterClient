@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../pages/home_page.dart';
 import '../pages/home_model.dart';
 import '../pages/timeline_model.dart';
 import '../twitter_objects/tweet.dart';
@@ -115,7 +116,15 @@ class TweetWidget extends StatelessWidget {
       child: Row(
         children: [
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (BuildContext context) {
+                  return TweetSheet(replyId: tweet.id_str);
+                },
+              );
+            },
             child: Consumer<HomeModel>(
               builder: (_, __, ___) {
                 return Row(
