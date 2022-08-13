@@ -93,45 +93,60 @@ class _HomePage extends StatelessWidget {
     }
   }
 }
+
 class TweetSheet extends StatefulWidget {
+  String? replyId;
+
+  TweetSheet({this.replyId});
   @override
   State<StatefulWidget> createState() {
-    return _TweetSheet();
+    return _TweetSheet(replyId: replyId);
   }
-
 }
 
 class _TweetSheet extends State<StatefulWidget> {
-  final TextEditingController _textEditingController = new TextEditingController();
+  final TextEditingController _textEditingController =
+      new TextEditingController();
+
+  String? replyId;
+
+  _TweetSheet({this.replyId});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            TextField(
-              keyboardType: TextInputType.multiline,
-              minLines: 4,
-              maxLines: 10,
-              decoration: InputDecoration(
-                  border: InputBorder.none, hintText: 'いまどうしてる？'),
-              controller: _textEditingController,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(onPressed: () => {}, icon: Icon(Icons.add_rounded)),
-                IconButton(onPressed: () {
-                  TwitterAPI().tweet(_textEditingController.text);
-                  _textEditingController.clear();
-                }, icon: Icon(Icons.send)),
-              ],
-            )
-          ],
-        ));
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          TextField(
+            keyboardType: TextInputType.multiline,
+            minLines: 4,
+            maxLines: 10,
+            decoration:
+                InputDecoration(border: InputBorder.none, hintText: 'いまどうしてる？'),
+            controller: _textEditingController,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(onPressed: () => {}, icon: Icon(Icons.add_rounded)),
+              IconButton(
+                  onPressed: () {
+                    if(replyId != null) {
+                      TwitterAPI().reply(replyId!, _textEditingController.text);
+                    } else {
+                      TwitterAPI().tweet(_textEditingController.text);
+                    }
+                    _textEditingController.clear();
+                  },
+                  icon: Icon(Icons.send)),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }

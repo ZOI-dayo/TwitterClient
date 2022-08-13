@@ -136,4 +136,10 @@ class TwitterAPI {
 
     await _request('tweets', 'POST', jsonEncode(body), '2').then((value) => print('ツイートしました $value'));
   }
+
+  Future<void> reply(String target, String text) async {
+    var body = {'status': text, 'in_reply_to_status_id': target};
+    print(jsonEncode(body));
+    print(await _request('statuses/update.json?in_reply_to_status_id=$target&status=$text', 'POST', null, '1.1'));
+  }
 }
