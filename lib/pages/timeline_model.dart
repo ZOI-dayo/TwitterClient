@@ -7,16 +7,24 @@ import '../twitter_api.dart';
 import '../twitter_objects/tweet.dart';
 
 class TimelineModel extends ChangeNotifier {
-  static final TimelineModel _instance = TimelineModel._internal();
+  static TimelineModel _instance = TimelineModel._internal();
   TimelineModel._internal();
   factory TimelineModel() {
+    if(_instance._disposed) {
+      _instance = TimelineModel._internal();
+    }
     return _instance;
   }
+  bool _disposed = false;
 
-  List<Tweet> tweets = [];
+  static final List<Tweet> tweets = [];
+
+  List<Tweet> getTweets() {
+    return tweets;
+  }
 
   void rebuild() {
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   void like(Tweet tweet) {
@@ -43,5 +51,11 @@ class TimelineModel extends ChangeNotifier {
     return tweet.retweeted || TwitterAPI().retweets.contains(tweet.id_str)
         ? Colors.red
         : Colors.white;
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-import 'package:twitter_test/my_database.dart';
-import '../twitter_api.dart';
-import '../twitter_objects/tweet.dart';
+import '../state/timeline.dart';
+import '../globals.dart';
 import 'main_model.dart';
 
 class HomeModel extends ChangeNotifier {
@@ -16,6 +14,9 @@ class HomeModel extends ChangeNotifier {
   }
 
   void selectTab(int index){
+    if(selectedTab == index && index == 0){
+      getIt<TimelineState>().controller.animateTo(0, duration: Duration(milliseconds: 1000), curve: Curves.ease);
+    } // Timelineの処理のところに書くべきかも?
     selectedTab = index;
     notifyListeners();
   }
