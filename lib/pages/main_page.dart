@@ -25,9 +25,17 @@ class _TokenCheck extends StatelessWidget {
     // ログイン状態に応じて、画面を切り替える
     debugPrint('=============-- incoming _TokenCheck');
     return Scaffold(
-        body: getIt<LocalState>().hasToken()
-            ? HomePage()
-            : createLogin(context));
+        body: FutureBuilder<String>(
+            future: getIt<LocalState>().loadToken(), // a previously-obtained Future<String> or null
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if(snapshot.connectionState == ConnectionState.done){
+                if(snapshot.data != null) return HomePage();
+                return createLogin(context);
+              }
+              return Container(child: Text('logind now'));
+            }
+        ),
+    );
   }
 
   Widget createLogin(BuildContext context) {
