@@ -29,7 +29,7 @@ class _TokenCheck extends StatelessWidget {
             future: getIt<LocalState>().loadToken(), // a previously-obtained Future<String> or null
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               if(snapshot.connectionState == ConnectionState.done){
-                if(snapshot.data != null) return HomePage();
+                if(snapshot.data != null && snapshot.data!.isNotEmpty) return HomePage();
                 return createLogin(context);
               }
               return Container(child: Text('logind now'));
