@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:twitter_test/twitter_api.dart';
 
 import '../pages/home_page.dart';
 import '../pages/home_model.dart';
@@ -26,9 +27,11 @@ class TweetWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             _getTweetWidget(context, tweet),
             _getButtonBar(context),
+            _getReply(context, tweet),
           ],
         ),
       ),
@@ -37,8 +40,17 @@ class TweetWidget extends StatelessWidget {
 
   Widget _getTweetWidget(BuildContext context, Tweet tweet) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Image.network(tweet.user.profile_image_url_https),
+        Image.network(
+          tweet.user.profile_image_url_https,
+          errorBuilder: (c, o, s) {
+            return const Icon(
+              Icons.error,
+              color: Colors.red,
+            );
+          },
+        ),
         Flexible(
           child: Column(
             children: [
@@ -84,6 +96,21 @@ class TweetWidget extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _getReply(BuildContext context, Tweet tweet) {
+    return SizedBox(
+      child: ListView.builder(
+        itemBuilder: (context, index) {
+          TwitterAPI().getReplies(tweet);
+          return SizedBox(
+            width: 10,
+            height: 10,
+          );
+        },
+        itemCount: 1,
       ),
     );
   }
@@ -146,9 +173,7 @@ class TweetWidget extends StatelessWidget {
               children: [
                 Icon(Icons.favorite,
                     color: context.watch<TimelineModel>().getLikeColor(tweet)),
-                Text(tweet
-                    .favorite_count
-                    .toString()),
+                Text(tweet.favorite_count.toString()),
               ],
             ),
             style: ElevatedButton.styleFrom(
@@ -162,9 +187,9 @@ class TweetWidget extends StatelessWidget {
             child: Row(
               children: [
                 Icon(Icons.loop,
-                    color: context.watch<TimelineModel>().getRetweetColor(tweet)),
-                Text(
-                    tweet.retweet_count.toString()),
+                    color:
+                        context.watch<TimelineModel>().getRetweetColor(tweet)),
+                Text(tweet.retweet_count.toString()),
               ],
             ),
             style: ElevatedButton.styleFrom(
@@ -191,4 +216,3 @@ class TweetWidget extends StatelessWidget {
     );
   }
 }
-

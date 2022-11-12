@@ -47,8 +47,6 @@ class Tweet {
   // String? lang; // BCP 47  Lang型?で保存?
   // Array<Rule> matching_rules;
 
-
-
   late final GlobalKey key;
 
   // Tweet(String tweetString) {
@@ -79,8 +77,8 @@ class Tweet {
     favorited = tweetObject["favorited"];
     retweeted = tweetObject["retweeted"];
 
-      key = getIt<TimelineState>().issueTweetKey(id);
-    }
+    key = getIt<TimelineState>().issueTweetKey(id);
+  }
 
   String toStringWithIndent(int offset, int indent) {
     String offsetStr = new List.filled(offset, " ").join();
@@ -159,7 +157,7 @@ class Tweet {
 
     final imageUrls =
         extended_entities?.media.map((e) => e.media_url_https).toList() ?? [];
-    final tweetContent = Column(children: [
+    final tweetContent = Column(mainAxisSize: MainAxisSize.min, children: [
       // imageRemovedText,
       // imageView,
       RichText(
@@ -193,5 +191,7 @@ class _StyleSpan extends TextSpan {
       : super(
             text: text,
             style: style,
-            recognizer: onTap != null ? (TapGestureRecognizer()..onTap = () => onTap.call(text)) : null);
+            recognizer: onTap != null
+                ? (TapGestureRecognizer()..onTap = () => onTap.call(text))
+                : null);
 }

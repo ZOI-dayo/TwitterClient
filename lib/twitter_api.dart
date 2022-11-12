@@ -84,6 +84,11 @@ class TwitterAPI {
     await _request('users/'+ myTwitterAccount.id_str +'/retweets', 'POST', '{"tweet_id": ' + tweet.id_str + '}', '2');
   }
 
+  Future<List<Tweet>> getReplies(Tweet tweet) async {
+    print(await _request('tweets', 'POST', '{"ids": ' + tweet.id_str + ', "tweet.fields": "conversation_id"}', '2'));
+    return [];
+  }
+
   Future<List<Tweet>> getTimeline(int latestId, int count, {DateTime? lastApiRequestTime, void callback(int latestId, int count, DateTime? lastApiRequestTime)?}) async {
     List<Tweet>? matchTweetsData = await MyDatabase().getTweetsAfterId(latestId, count);
 

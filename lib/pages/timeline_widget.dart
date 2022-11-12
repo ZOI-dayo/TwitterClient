@@ -18,6 +18,7 @@ class TimelineWidget extends StatelessWidget {
       child: SingleChildScrollView(
         controller: getIt<TimelineState>().controller,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: context.watch<TimelineModel>().getTweets().map((e) {
             return TweetWidget(e);
           }).toList(),
