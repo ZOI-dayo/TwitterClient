@@ -102,6 +102,7 @@ class TweetWidget extends StatelessWidget {
 
   Widget _getReply(BuildContext context, Tweet tweet) {
     return SizedBox(
+      height: 500,
       child: ListView.builder(
         itemBuilder: (context, index) {
           TwitterAPI().getReplies(tweet);
@@ -140,6 +141,7 @@ class TweetWidget extends StatelessWidget {
   // TODO BuildContextでなくTweetを使ってできるようにする
   Widget _getButtonBar(BuildContext context) {
     return SizedBox(
+      height: 100,
       child: Row(
         children: [
           ElevatedButton(
@@ -153,16 +155,10 @@ class TweetWidget extends StatelessWidget {
               );
             },
             child: Consumer<HomeModel>(
-              builder: (_, __, ___) {
-                return Row(
-                  children: [
-                    Icon(Icons.comment, color: Colors.white),
-                  ],
-                );
-              },
+              builder: (_, __, ___) => Icon(Icons.comment, color: Colors.white),
             ),
             style: ElevatedButton.styleFrom(
-              primary: Colors.transparent,
+              backgroundColor: Colors.transparent,
             ),
           ),
           ElevatedButton(
@@ -177,7 +173,7 @@ class TweetWidget extends StatelessWidget {
               ],
             ),
             style: ElevatedButton.styleFrom(
-              primary: Colors.transparent,
+              backgroundColor: Colors.transparent,
             ),
           ),
           ElevatedButton(
@@ -193,7 +189,7 @@ class TweetWidget extends StatelessWidget {
               ],
             ),
             style: ElevatedButton.styleFrom(
-              primary: Colors.transparent,
+              backgroundColor: Colors.transparent,
             ),
           ),
           ElevatedButton(
@@ -201,14 +197,10 @@ class TweetWidget extends StatelessWidget {
               context.read<TimelineModel>().share(tweet);
             },
             child: Consumer<HomeModel>(
-              builder: (_, __, ___) {
-                return Row(
-                  children: [Icon(Icons.share)],
-                );
-              },
+              builder: (_, __, ___) => Icon(Icons.share),
             ),
             style: ElevatedButton.styleFrom(
-              primary: Colors.transparent,
+              backgroundColor: Colors.transparent,
             ),
           ),
         ],

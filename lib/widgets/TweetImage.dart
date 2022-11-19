@@ -15,6 +15,8 @@ import '../twitter_objects/tweet.dart';
 class TweetImage extends Container {
   TweetImage(BuildContext context, Tweet tweet, List<String> imageUrls)
       : super(
+            width: 100,
+            height: 100,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.red),
               borderRadius: BorderRadius.circular(10),
