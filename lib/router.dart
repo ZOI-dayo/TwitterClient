@@ -11,7 +11,7 @@ final GoRouter router = GoRouter(
   routes: <RouteBase>[
     GoRoute(
       path: '/',
-      redirect: (_, __) => '/main',
+      redirect: (_, __) => '/home',
     ),
     GoRoute(
       path: '/home',
@@ -37,7 +37,7 @@ String? _guard(BuildContext context, GoRouterState state) {
     return '/signin';
   }
   else if (signedIn && signingIn) {
-    return '/main';
+    return '/home';
   }
 
   return null;
