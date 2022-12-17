@@ -55,13 +55,26 @@ class _SearchPage extends StatelessWidget {
                       future: context.watch<SearchModel>().getTimeline(),
                       builder: (BuildContext context, AsyncSnapshot<List<Tweet>> snapshot) {
                         print('****************** FutureBuilder::build size=${snapshot.data?.length}');
-                        return SingleChildScrollView(
-                            key: context.watch<SearchModel>().scrollWidgetKey,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Column(
-                                children: snapshot.data
-                                    ?.map((Tweet t) => TweetWidget(t))
-                                    .toList() ?? [Text('no items')]));
+                        // 通信中はスピナーを表示
+                        if (snapshot.connectionState != ConnectionState.done) {
+                          return CircularProgressIndicator();
+                        }
+                        if (snapshot.hasError) {
+                          return Text(snapshot.error.toString());
+                        }
+                        if (snapshot.hasData) {
+                          return SingleChildScrollView(
+                              key: context
+                                  .watch<SearchModel>()
+                                  .scrollWidgetKey,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Column(
+                                  children: snapshot.data
+                                      ?.map((Tweet t) => TweetWidget(t))
+                                      .toList() ?? [Text('no items')]));
+                        }else {
+                          return Text("データが存在しません");
+                        }
                       }
                   )),
             )

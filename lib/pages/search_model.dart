@@ -40,6 +40,7 @@ class SearchModel extends ChangeNotifier {
 
   void searchTweet(String keyword){
     this.keyword = keyword;
+    print('searchTweet keyward = $keyword');
     notifyListeners();
   }
 
@@ -49,14 +50,20 @@ class SearchModel extends ChangeNotifier {
       await _twitterAPI.init();
     }
 
-    print('_twitterAPI.client= ${_twitterAPI.client}');
-    if(_twitterAPI.client == null) return [];
-    print('keyword= ${keyword}');
-    if(keyword == null) return [];
+    try {
+      print('_twitterAPI.client= ${_twitterAPI.client}');
+      if (_twitterAPI.client == null) return [];
+      print('getTimeline keyword= ${keyword}');
+      if (keyword == null) return [];
 
-    List<Tweet> additionTweets = await _twitterAPI.searchTimeline(keyword);
-    print('*********** _getTimeline= ${additionTweets.length}');
-    return additionTweets;
+      List<Tweet> additionTweets = await _twitterAPI.searchTimeline(keyword);
+      print('*********** _getTimeline= ${additionTweets.length}');
+      return additionTweets;
+    }catch (e, stackTrace){
+      print(e);
+      print(stackTrace);
+    }
+    return [];
   }
 
 }

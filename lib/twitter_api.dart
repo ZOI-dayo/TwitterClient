@@ -158,12 +158,12 @@ class TwitterAPI {
       return [];
     }
     print(result);
-    List tweetData = result as List;
+    List tweetData = result['statuses'] as List;
     List<Tweet> tweetObjects = [];
     tweetData.forEach((data) => {
       tweetObjects.add(new Tweet(data))
     });
 
-    return tweetObjects;
+    return Future.value(tweetObjects);
   }
 }
