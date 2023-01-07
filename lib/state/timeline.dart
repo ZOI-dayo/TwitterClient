@@ -79,14 +79,7 @@ class TimelineState {
     print(additionTweets);
     TimelineModel.tweets.insertAll(0, additionTweets);
     TimelineModel().rebuild();
-
-    double dx = 0;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      additionTweets.forEach((e) {
-        dx += tweetKeyList[e.id]?.currentContext?.size?.height ?? 0;
-      });
-      controller.jumpTo(dx);
-    });
+    controller.jumpTo(0);
     return TimelineModel.tweets;
   }
 
@@ -94,7 +87,7 @@ class TimelineState {
     update();
     TimelineModel().rebuild();
   }
-  
+
   Future<void> refreshByCache() async {
     updateByCache();
     // TimelineModel().rebuild();
