@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:share_extend/share_extend.dart';
 import '../pages/timeline_model.dart';
 import '../my_database.dart';
 import '../../twitter_api.dart';
@@ -84,4 +85,29 @@ class TimelineState {
     tweetKeyList[id] = key;
     return key;
   }
+
+  void like(Tweet tweet) {
+    TwitterAPI().like(tweet);
+  }
+
+  void retweet(Tweet tweet) async {
+    TwitterAPI().retweet(tweet);
+  }
+
+  Color getLikeColor(Tweet tweet) {
+    return tweet.favorited || TwitterAPI().likes.contains(tweet.id_str)
+        ? Colors.red
+        : Colors.white;
+  }
+
+  Color getRetweetColor(Tweet tweet) {
+    return tweet.retweeted || TwitterAPI().retweets.contains(tweet.id_str)
+        ? Colors.red
+        : Colors.white;
+  }
+
+  void share(Tweet tweet) {
+    ShareExtend.share(tweet.text, "text");
+  }
+
 }
