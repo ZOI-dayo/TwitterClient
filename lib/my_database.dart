@@ -67,4 +67,17 @@ class MyDatabase {
 
     return [];
   }
+  Future<List<Tweet>> getLatestTweets(int count) async {
+    List<Map<String, Object?>>? matchTweetsData = (await _db?.query("tweets",
+        limit: count,
+        orderBy: "id DESC"));
+    if (matchTweetsData != null/* && matchTweetsData.length == 10*/) {
+      print(matchTweetsData);
+      return matchTweetsData
+          .map((tData) =>
+      new Tweet(jsonDecode(tData["content"] as String) as Map))
+          .toList();
+    }
+    return [];
+  }
 }

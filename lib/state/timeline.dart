@@ -58,7 +58,7 @@ class TimelineState {
     TimelineModel().rebuild();
 
     double dx = 0;
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       additionTweets.forEach((e) {
         /*
         print(dx);
@@ -74,9 +74,30 @@ class TimelineState {
     return TimelineModel.tweets;
   }
 
+  Future<List<Tweet>> updateByCache() async {
+    List<Tweet> additionTweets = await db.getLatestTweets(20);
+    print(additionTweets);
+    TimelineModel.tweets.insertAll(0, additionTweets);
+    TimelineModel().rebuild();
+
+    double dx = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      additionTweets.forEach((e) {
+        dx += tweetKeyList[e.id]?.currentContext?.size?.height ?? 0;
+      });
+      controller.jumpTo(dx);
+    });
+    return TimelineModel.tweets;
+  }
+
   Future<void> refresh() async {
     update();
     TimelineModel().rebuild();
+  }
+  
+  Future<void> refreshByCache() async {
+    updateByCache();
+    // TimelineModel().rebuild();
   }
 
   GlobalKey issueTweetKey(int id) {

@@ -10,7 +10,7 @@ import '../globals.dart';
 class TimelineWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (TimelineModel.tweets.length == 0) getIt<TimelineState>().refresh();
+    if (TimelineModel.tweets.length == 0) getIt<TimelineState>().refreshByCache();
     return RefreshIndicator(
       onRefresh: () async {
         await getIt<TimelineState>().refresh();
