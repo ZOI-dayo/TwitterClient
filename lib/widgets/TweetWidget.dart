@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:twitter_test/twitter_api.dart';
 
+import '../globals.dart';
 import '../pages/home_page.dart';
 import '../pages/home_model.dart';
-import '../pages/timeline_model.dart';
+import '../state/timeline.dart';
 import '../twitter_objects/tweet.dart';
 
 class TweetWidget extends StatelessWidget {
@@ -163,12 +163,12 @@ class TweetWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<TimelineModel>().like(tweet);
+              getIt<TimelineState>().like(tweet);
             },
             child: Row(
               children: [
                 Icon(Icons.favorite,
-                    color: context.watch<TimelineModel>().getLikeColor(tweet)),
+                    color: getIt<TimelineState>().getLikeColor(tweet)),
                 Text(tweet.favorite_count.toString()),
               ],
             ),
@@ -178,13 +178,13 @@ class TweetWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<TimelineModel>().retweet(tweet);
+              getIt<TimelineState>().retweet(tweet);
             },
             child: Row(
               children: [
                 Icon(Icons.loop,
                     color:
-                        context.watch<TimelineModel>().getRetweetColor(tweet)),
+                    getIt<TimelineState>().getRetweetColor(tweet)),
                 Text(tweet.retweet_count.toString()),
               ],
             ),
@@ -194,7 +194,7 @@ class TweetWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<TimelineModel>().share(tweet);
+              getIt<TimelineState>().share(tweet);
             },
             child: Consumer<HomeModel>(
               builder: (_, __, ___) => Icon(Icons.share),
