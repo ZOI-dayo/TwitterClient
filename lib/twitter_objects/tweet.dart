@@ -127,7 +127,7 @@ class Tweet {
     return tagCompiledText;
   }
 
-  Widget getTweetContent(BuildContext context, {bool retweeted = false}) {
+  Widget getTweetContent(BuildContext context/*, {bool retweeted = false}*/) {
     // final List<String> images = [];
     // RegExp(r'https:\/\/t.co\/\S+').allMatches(text).forEach((match) {
     //   images.add(match.group(0).toString() ?? "");
@@ -139,6 +139,8 @@ class Tweet {
     //   children: images.map((e) => Image.network(e)).toList(),
     // );
     String visibleText = text;
+    visibleText = visibleText.replaceAll(RegExp(r'RT @\S+: '), "");
+
     ((entities?.media ?? []) + (extended_entities?.media ?? [])).forEach(
         (media) => {visibleText = visibleText.replaceAll(media.url, "")});
 
@@ -147,7 +149,7 @@ class Tweet {
     compiledText = _ConvertText(RegExp(r'https:\/\/\S+'), compiledText, 100,
         onTap: (String text) async {
       try {
-        await launch(text);
+        await launchUrl(Uri.parse(text));
       } catch (e) {
         print(e);
       }
@@ -163,7 +165,7 @@ class Tweet {
       RichText(
         text: TextSpan(
           children: <TextSpan>[
-                if (retweeted) TextSpan(text: "RT"),
+                if (retweeted_status != null) TextSpan(text: "RT by @${retweeted_status?.user.screen_name.toString()}\n\n", style: TextStyle(color: Colors.black, fontSize: 20)),
               ] +
               compiledText,
         ),

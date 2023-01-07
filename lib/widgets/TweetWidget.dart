@@ -18,7 +18,6 @@ class TweetWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         open(context);
-        //openTweet(context, tweet: context.read<TweetModel>().tweet);
       },
       child: Container(
         key: tweet.key,
@@ -30,8 +29,6 @@ class TweetWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _getTweetWidget(context, tweet),
-            _getButtonBar(context),
-            _getReply(context, tweet),
           ],
         ),
       ),
@@ -39,41 +36,46 @@ class TweetWidget extends StatelessWidget {
   }
 
   Widget _getTweetWidget(BuildContext context, Tweet tweet) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.network(
-          tweet.user.profile_image_url_https,
-          errorBuilder: (c, o, s) {
-            return const Icon(
-              Icons.error,
-              color: Colors.red,
-            );
-          },
-        ),
-        Flexible(
-          child: Column(
-            children: [
-              Text(tweet.user.name,
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              if (!tweet.isRetweeted())
-                tweet.getTweetContent(context, retweeted: true)
-              else
-                GestureDetector(
-                  onTap: () {
-                    open(context);
-                    //openTweet(context, tweet: tweet.retweeted_status ?? tweet);
-                  },
-                  child: Container(
-                      color: Colors.transparent,
-                      padding: EdgeInsets.all(10),
-                      child: _getTweetWidget(
-                          context, tweet.retweeted_status ?? tweet)),
-                ),
-            ],
+    return SizedBox(
+      width: double.maxFinite,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Image.network(
+            tweet.user.profile_image_url_https,
+            errorBuilder: (c, o, s) {
+              return const Icon(
+                Icons.error,
+                color: Colors.red,
+              );
+            },
           ),
-        ),
-      ],
+          Flexible(
+            child: Column(
+              children: [
+                Text(tweet.user.name,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                // if (!tweet.isRetweeted())
+                  tweet.getTweetContent(context/*, retweeted: true*/),
+                // else
+                //   GestureDetector(
+                //     onTap: () {
+                //       open(context);
+                //       //openTweet(context, tweet: tweet.retweeted_status ?? tweet);
+                //     },
+                //     child: Container(
+                //         color: Colors.transparent,
+                //         padding: EdgeInsets.all(10),
+                //         child: _getTweetWidget(
+                //             context, tweet.retweeted_status ?? tweet)),
+                //   ),
+                _getButtonBar(context),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -92,6 +94,7 @@ class TweetWidget extends StatelessWidget {
               children: [
                 _getTweetWidget(context, tweet),
                 _getButtonBar(context),
+                _getReply(context, tweet),
               ],
             ),
           ),

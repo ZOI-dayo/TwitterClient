@@ -72,6 +72,7 @@ class TwitterAPI {
     return jsonDecode(body);
   }
 
+  // TODO この配列いる?
   List<String> likes = [];
   void like(Tweet tweet) async {
     likes.add(tweet.id_str);
