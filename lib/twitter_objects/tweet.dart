@@ -186,7 +186,7 @@ class Tweet {
 
 class _StyleSpan extends TextSpan {
   late final power;
-  static const defaultStyle = TextStyle(color: Colors.black, fontSize: 18);
+  static const defaultStyle = TextStyle(color: Colors.white, fontSize: 18);
 
   _StyleSpan(String text,
       {TextStyle style = defaultStyle, this.power = 0, Function? onTap})

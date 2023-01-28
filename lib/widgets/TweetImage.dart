@@ -18,7 +18,7 @@ class TweetImage extends Container {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.red),
+              // border: Border.all(color: Colors.red),
               borderRadius: BorderRadius.circular(10),
             ),
             child: _getImageContent(context, tweet, imageUrls));

@@ -21,9 +21,11 @@ class TweetWidget extends StatelessWidget {
       },
       child: Container(
         key: tweet.key,
+        padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.red),
-          borderRadius: BorderRadius.circular(10),
+          color: const Color.fromARGB(255, 64, 64, 64),
+          border: Border(bottom: BorderSide()),
+          // borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -51,13 +53,14 @@ class TweetWidget extends StatelessWidget {
               );
             },
           ),
+          SizedBox(width: 20),
           Flexible(
             child: Column(
               children: [
                 Text(tweet.user.name,
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 // if (!tweet.isRetweeted())
-                  tweet.getTweetContent(context/*, retweeted: true*/),
+                tweet.getTweetContent(context /*, retweeted: true*/),
                 // else
                 //   GestureDetector(
                 //     onTap: () {
@@ -186,8 +189,7 @@ class TweetWidget extends StatelessWidget {
             child: Row(
               children: [
                 Icon(Icons.loop,
-                    color:
-                    getIt<TimelineState>().getRetweetColor(tweet)),
+                    color: getIt<TimelineState>().getRetweetColor(tweet)),
                 Text(tweet.retweet_count.toString()),
               ],
             ),
